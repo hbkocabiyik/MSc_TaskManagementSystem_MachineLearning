@@ -1,0 +1,123 @@
+﻿@model TaskManagement.Web.Models.Employee
+@using TaskManagement.Web.Helpers
+
+@{
+    ViewBag.Title = "Engineer Details";
+}
+
+<h2>Engineer - @Model.Name @Model.Surname</h2>
+
+<fieldset>
+    <legend>Details</legend>
+    
+    <p>
+        <table>
+            <tr>
+                <th>@Html.LabelFor(model => model.Login)</th>
+                <td>@Html.DisplayFor(model => model.Login)</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.EmploymentDate)</th>
+                <td>@Html.DisplayFor(model => model.EmploymentDate)</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.PositionLevel)</th>
+                <td>@Html.GetPosition(@Model.PositionLevel, @Model.Role)</td>
+            </tr>
+        </table>
+    </p>
+
+    <p>
+        <table>
+            <tr>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Estimation
+                </th>
+                <th>
+                    Completed
+                </th>
+                <th>
+                    Remaining
+                </th>
+                <th>
+                    Priority
+                </th>
+                <th>
+                    Area
+                </th>
+            </tr>
+
+        @foreach (var item in ViewBag.Tasks) {
+            <tr>
+                <td>
+                    @Html.GetStatus((int)@item.Status)
+                </td>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Description
+                </td>
+                <td>
+                    @String.Format("{0:F}", @item.EstimatedTime)
+                </td>
+                <td>
+                    @String.Format("{0:F}", @item.SpentTime)
+                </td>
+                <td>
+                    @String.Format("{0:F}", @item.RemainingTime)
+                </td>
+                <td>
+                    @Html.GetPriority((int)@item.Priority)
+                </td>
+                <td>
+                    @item.Area.Name
+                </td>
+            </tr>
+        }
+
+        </table>
+    </p>
+</fieldset>
+<fieldset>
+    <legend>Skills</legend>
+
+    <p>
+        <table>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Level
+                </th>                
+            </tr>
+
+        @foreach (var item in ViewBag.Skills) {
+            <tr>
+                <td>
+                    @item.Skill.Name
+                </td>
+                <td>
+                    @Html.GetSkillLevel((int)@item.Experience)
+                </td>                
+            </tr>
+        }
+
+        </table>
+    </p>
+</fieldset>
+    
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>
+

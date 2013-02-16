@@ -1,0 +1,39 @@
+\select@language {polish}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Algorytm parametryzowany~\cite {Cich07}\relax }}{19}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces \'Zr\'od\IeC {\l }o informacji trenuj\k acej~\cite {Cich07}\relax }}{21}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Drzewo decyzyjne dla stan\'ow pogody\relax }}{32}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Przypadek u\.zycia dla algorytmu drzew decyzyjnych\relax }}{44}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Diagram komponent\'ow - przetwarzanie danych przez algorytm drzew decyzyjnych\relax }}{45}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Diagram klas - komponent przetwarzaj\k acy dane\relax }}{46}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Diagram klas - komponent wczytuj\k acy dane\relax }}{48}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Diagram klas - podstawowa struktura algorytmu\relax }}{49}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Diagram klas - klasa opakowuj\k aca obliczenia zwi\k azane z wyznaczeniem entropii, zysku informacyjnego i ilorazu zysku informacyjnego\relax }}{50}
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Diagram klas - algorytm tworzenia drzewa decyzyjnego i jego wykorzystania\relax }}{51}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Drzewo decyzyjne utworzone za pomoc\k a naszego algorytmu dla pliku bridges.dat~\ref {ex:bridgeData}\relax }}{59}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Diagram tabel dla bazy danych systemu zarz\k adzania zadaniami\relax }}{66}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Diagram przypadk\'ow u\.zycia dla roli Administrator\relax }}{68}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Diagram przypadk\'ow u\.zycia dla roli Engineer\relax }}{70}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Diagram przypadk\'ow u\.zycia dla roli Manager\relax }}{71}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Ekran powitania dla anonimowego u\.zytkownika\relax }}{99}
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Ekran logowania dla anonimowego u\.zytkownika\relax }}{100}
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Ekran rejestracji dla anonimowego u\.zytkownika\relax }}{103}
+\contentsline {figure}{\numberline {A.4}{\ignorespaces Ekran g\IeC {\l }\'owny dla administratora - widok na dane pracownik\'ow\relax }}{104}
+\contentsline {figure}{\numberline {A.5}{\ignorespaces Ekran tworzenia nowego pracownika\relax }}{105}
+\contentsline {figure}{\numberline {A.6}{\ignorespaces Ekran usuwania istniej\k acego pracownika\relax }}{106}
+\contentsline {figure}{\numberline {A.7}{\ignorespaces Ekran edycji danych pracownika\relax }}{107}
+\contentsline {figure}{\numberline {A.8}{\ignorespaces Ekran wy\'swietlania szczeg\'o\IeC {\l }\'ow pracownika\relax }}{108}
+\contentsline {figure}{\numberline {A.9}{\ignorespaces Ekran informacji o zalogowanym programi\'scie (in\.zynierze)\relax }}{109}
+\contentsline {figure}{\numberline {A.10}{\ignorespaces Ekran z zadaniami przypisanymi do programisty\relax }}{109}
+\contentsline {figure}{\numberline {A.11}{\ignorespaces Ekran edycji zadania\relax }}{110}
+\contentsline {figure}{\numberline {A.12}{\ignorespaces Ekran szczeg\'o\IeC {\l }\'ow zadania\relax }}{111}
+\contentsline {figure}{\numberline {A.13}{\ignorespaces Ekran z list\k a zada\'n przypisanych do menad\.zera\relax }}{112}
+\contentsline {figure}{\numberline {A.14}{\ignorespaces Ekran z list\k a obszar\'ow funkcjonalnych i niefunkcjonalnych\relax }}{113}
+\contentsline {figure}{\numberline {A.15}{\ignorespaces Ekran z list\k a umiej\k etno\'sci przypisywanych programistom\relax }}{114}
+\contentsline {figure}{\numberline {A.16}{\ignorespaces Ekran z list\k a programist\'ow\relax }}{115}

@@ -1,0 +1,180 @@
+\chapter{Interfejs systemu zarz¹dzania zadaniami}
+\label{cha:interfejsSystemu}
+
+%---------------------------------------------------------------------------
+
+\section{Interfejs systemu}
+
+W czêœci tej przedstawimy graficzny interfejs u¿ytkownika udostêpniany w naszym systemie. Opis dzielimy na cztery czêœci, w zale¿noœci od typu u¿ytkownika wykorzystuj¹cego system: \emph{u¿ytkownik anonimowy}, \emph{administrator}, \emph{programista} oraz \emph{menad¿er}.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{U¿ytkownik anonimowy}
+
+Anonimowy u¿ytkownik ma do dyspozycji trzy ekrany. Ekran opisu systemu, ekran logowania oraz ekran rejestracji. Ekran opisu systemu zawiera proste informacje na temat pracy oraz autora systemu~\ref{rys:anonimowyHome}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{anonymous_user.PNG}}
+    \caption{Ekran powitania dla anonimowego u¿ytkownika}
+    \label{rys:anonimowyHome}
+    \end{center}
+\end{figure}
+
+Kolejnym ekranem jest wspomniany ekran logowania. Pozwala on przejœæ do funkcjonalnej czêœci systemu po udanym procesie logowania. U¿ytkownik jest informowany o b³êdzie logowania, jeœli poda nieprawid³owe dane identyfikacyjne. Dodatkowo z ekranu tego anonimowy u¿ytkownik mo¿e przejœæ do ekranu rejestracji. Ekran ten przedstawiony jest na rysunku~\ref{rys:anonimowyLogin}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{anonymous_user_login.PNG}}
+    \caption{Ekran logowania dla anonimowego u¿ytkownika}
+    \label{rys:anonimowyLogin}
+    \end{center}
+\end{figure}
+
+Ostatnim ekranem dla anonimowego u¿ytkownika jest ekran rejestracji. U¿ytkownik podaje w nim potrzebne dane do rejestracji, po czym mo¿e zalogowaæ siê do systemu. Dopóki jednak nie zostan¹ mu przypisane odpowiednie uprawnienia (rola), bêdzie widzia³ tê sam¹ czêœæ systemu co u¿ytkownik niezalogowany poza ekranami logowania i rejestracji. Ekran rejestracji znajduje siê na rysunku~\ref{rys:anonimowyRegister}. Na ekranie widaæ komunikat walidacji has³a mówi¹cy o b³êdnie uzupe³nionym haœle.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{anonymous_user_register.PNG}}
+    \caption{Ekran rejestracji dla anonimowego u¿ytkownika}
+    \label{rys:anonimowyRegister}
+    \end{center}
+\end{figure}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Administrator}
+
+Administrator ma do dyspozycji jeden g³ówny ekran, gdzie widzi detale wszystkich pracowników zarejestrowanych w systemie. Dodatkowo z tego ekranu mo¿e przejœæ do trzech innych ekranów. Tworzenia nowego pracownika~\ref{rys:adminCreate}, usuwania istniej¹cego pracownika~\ref{rys:adminDelete}, edycji danych pracownika~\ref{rys:adminEdit} oraz wyœwietlenia szczegó³ów dotycz¹cych pracownika~\ref{rys:adminDetails}. Czêœæ ekranu g³ównego widoczna jest na rysunku~\ref{rys:adminList}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{admin_list.PNG}}
+    \caption{Ekran g³ówny dla administratora - widok na dane pracowników}
+    \label{rys:adminList}
+    \end{center}
+\end{figure}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{admin_create.PNG}}
+    \caption{Ekran tworzenia nowego pracownika}
+    \label{rys:adminCreate}
+    \end{center}
+\end{figure}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{admin_delete.PNG}}
+    \caption{Ekran usuwania istniej¹cego pracownika}
+    \label{rys:adminDelete}
+    \end{center}
+\end{figure}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{admin_edit.PNG}}
+    \caption{Ekran edycji danych pracownika}
+    \label{rys:adminEdit}
+    \end{center}
+\end{figure}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{admin_details.PNG}}
+    \caption{Ekran wyœwietlania szczegó³ów pracownika}
+    \label{rys:adminDetails}
+    \end{center}
+\end{figure}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Programista (in¿ynier)}
+
+Programista po zalogowaniu ma dostêp do dwóch g³ównych ekranów: ekran zadañ przypisanych programiœcie oraz ekran opisuj¹cy dane pracownia.
+
+Ekran opisuj¹cy dane pracownika jest stosunkowo prosty, pozwala zweryfikowaæ u¿ytkownikowi czy dane na jego temat zapisane w bazie firmy s¹ zgodne z rzeczywistoœci¹. Ekran mo¿na zobaczyæ na rysunku~\ref{rys:programistaAbout}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{developer_about.PNG}}
+    \caption{Ekran informacji o zalogowanym programiœcie (in¿ynierze)}
+    \label{rys:programistaAbout}
+    \end{center}
+\end{figure}
+
+G³ównym ekranem u¿ywanym przez programistê jest ekran zadañ. Ekran mo¿na zobaczyæ na rysunku~\ref{rys:programistaTasks}. Na ekranie jest widoczna wiêkszoœæ informacji na temat poszczególnych zadañ. Dodatkowo z tego ekranu programista mo¿e przejœæ do ekranu edycji zadania~\ref{rys:programistaTaskEdit} oraz do ekranu szczegó³ów zadania~\ref{rys:programistaTaskDetails}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{developer_tasks.PNG}}
+    \caption{Ekran z zadaniami przypisanymi do programisty}
+    \label{rys:programistaTasks}
+    \end{center}
+\end{figure}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{developer_task_edit.PNG}}
+    \caption{Ekran edycji zadania}
+    \label{rys:programistaTaskEdit}
+    \end{center}
+\end{figure}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{developer_task_details.PNG}}
+    \caption{Ekran szczegó³ów zadania}
+    \label{rys:programistaTaskDetails}
+    \end{center}
+\end{figure}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Menad¿er}
+
+Menad¿er, jako g³ówny u¿ytkownik systemu ma najwiêksze mo¿liwoœci w samym systemie. Znaczna iloœæ ekranów mo¿liwych do przegl¹dania przez menad¿era nie pozwala na zamieszczenie ich wszystkich w naszej pracy. Jednak mo¿emy odwo³aæ siê do analogicznych ekranów pokazywanych dla u¿ytkowników z innymi rolami. Przyk³adowo, ekran z detalami na temat menad¿era jest analogiczny do ekranu z detalami na temat programisty~\ref{rys:programistaAbout}. Ekrany do zarz¹dzania wszelakimi typami obiektów s¹ analogiczne do tych, które ju¿ widzieliœmy. Usuwanie w zale¿noœci od treœci jest analogiczne do ekranu~\ref{rys:adminDelete}, wyœwietlanie szczegó³ów obiektu do ekranu~\ref{rys:adminDetails}, edycja obiektu do ekranu~\ref{rys:adminEdit} oraz tworzenie obiektu do ekranu~\ref{rys:adminCreate}. Do omówienia pozostaj¹ nam cztery specyficzne ekrany dla menad¿era dotycz¹ce ró¿nych obiektów.
+
+Ekran z list¹ zadañ prezentuje zadania przypisane do menad¿era. Zadania takie czekaj¹ na przypisanie do konkretnego pracownika do realizacji. Bezpoœrednio z tego ekranu, który mo¿na zobaczyæ na rysunku~\ref{rys:managerTasks}, menad¿er mo¿e stworzyæ nowe zadanie, dodaæ lub usun¹æ umiejêtnoœæ wymagan¹ przez zadanie, edytowaæ lub przegl¹daæ dane zadania (miêdzy innymi przypisaæ zadanie) oraz mo¿e usun¹æ zadanie. Dodatkowo, prezentowane okno zawiera rozszerzenie po integracji z czêœci¹ algorytmiczn¹ w postaci dwóch ekranów z sugesti¹ najlepiej dopasowanego pracownika. Akcja \emph{Suggest Employee} u¿ywa algorytmu rozszerzonego, natomiast akcja~\emph{Suggest Employee Optimized} u¿ywa algorytmu podstawowego.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{manager_tasks.PNG}}
+    \caption{Ekran z list¹ zadañ przypisanych do menad¿era}
+    \label{rys:managerTasks}
+    \end{center}
+\end{figure}
+
+Ekran z obszarami funkcjonalnymi i niefunkcjonalnymi projektów widoczny jest na rysunku~\ref{rys:managerAreas}. Z poziomu tego ekranu menad¿er mo¿e tworzyæ, usuwaæ i wyœwietlaæ szczegó³y poszczególnych obszarów.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{manager_areas.PNG}}
+    \caption{Ekran z list¹ obszarów funkcjonalnych i niefunkcjonalnych}
+    \label{rys:managerAreas}
+    \end{center}
+\end{figure}
+
+Ekran z list¹ umiejêtnoœci widoczny jest na rysunku~\ref{rys:managerSkills}. Z poziomu tego ekranu menad¿er mo¿e tworzyæ, edytowaæ, usuwaæ i wyœwietlaæ szczegó³y poszczególnych umiejêtnoœci.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{manager_skills.PNG}}
+    \caption{Ekran z list¹ umiejêtnoœci przypisywanych programistom}
+    \label{rys:managerSkills}
+    \end{center}
+\end{figure}
+
+Ekran z list¹ programistów (in¿ynierów) widoczny jest na rysunku~\ref{rys:managerEmployees}. Ekran umo¿liwia wyszukiwanie pracownika, tworzenie z jego poziomu nowego zadania, dodawania i usuwania umiejêtnoœci do pracowników oraz do przegl¹dania danych szczegó³owych pracowników. Dane szczegó³owe pracownika oprócz podstawowych danych zawieraj¹ listê przypisanych zadañ do pracownika wraz ze szczegó³owym opisem oraz listê umiejêtnoœci przypisanych do pracownika.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{manager_employees.PNG}}
+    \caption{Ekran z list¹ programistów}
+    \label{rys:managerEmployees}
+    \end{center}
+\end{figure}

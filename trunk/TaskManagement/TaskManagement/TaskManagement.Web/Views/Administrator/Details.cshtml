@@ -1,0 +1,46 @@
+﻿@model TaskManagement.Web.Models.Employee
+@using TaskManagement.Web.Helpers
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Employee</legend>
+
+    <p>
+        <table>
+            <tr>
+                <th>Login</th>
+                <td>@Model.Login</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>@Model.Name</td>
+            </tr>
+            <tr>
+                <th>Surname</th>
+                <td>@Model.Surname</td>
+            </tr>
+            <tr>
+                <th>Employment Date</th>
+                <td>@String.Format("{0:yyyy-MM-dd}", Model.EmploymentDate)</td>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <td>@Model.Role</td>
+            </tr>
+            <tr>
+                <th>Position</th>
+                <td>@Html.GetPosition(@Model.PositionLevel, @Model.Role)</td>
+            </tr>
+        </table>
+    </p>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+

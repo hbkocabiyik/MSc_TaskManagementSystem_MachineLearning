@@ -1,0 +1,64 @@
+﻿@model IEnumerable<TaskManagement.Web.Models.Employee>
+@using TaskManagement.Web.Helpers
+
+@{
+    ViewBag.Title = "Engineers";
+}
+
+<h2>Engineers</h2>
+
+<p>
+    @Html.ActionLink("Create New Task", "Create", "Tasks")
+</p>
+
+@using (Html.BeginForm("Index", "Employees", FormMethod.Get)) {
+    @Html.TextBox("q")
+    <input type="submit" value="Search" />
+}
+
+<table>
+    <tr>
+        <th></th>
+        <th>
+            Login
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Surname
+        </th>
+        <th>
+            Employment Date
+        </th>
+        <th>
+            Position
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink("Add Skill", "AddSkill", new { id=item.ID }) |
+            @Html.ActionLink("Remove Skill", "RemoveSkill", new { id = item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID })
+        </td>
+        <td>
+            @item.Login
+        </td>
+        <td>
+            @item.Name
+        </td>
+        <td>
+            @item.Surname
+        </td>
+        <td>
+            @String.Format("{0:d}", item.EmploymentDate)
+        </td>
+        <td>
+            @Html.GetPosition(@item.PositionLevel, @item.Role)
+        </td>
+    </tr>
+}
+
+</table>

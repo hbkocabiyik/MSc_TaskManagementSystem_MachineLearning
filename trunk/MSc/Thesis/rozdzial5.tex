@@ -1,0 +1,303 @@
+\chapter{Wyniki badañ eksperymentalnych}
+\label{cha:wynikiBadanEksperymentalnych}
+
+W tym rozdziale skupimy siê na wykorzystaniu algorytmu w naszym systemie. Ca³y rozdzia³ podzielimy na trzy ró¿ne sekcje. Pierwsza bêdzie dotyczyæ prostych testów, przedstawiaj¹cych w zasadzie ju¿ na samym pocz¹tku dzia³ania algorytmu stu procentow¹ skutecznoœæ. Dalej, skupimy siê na trudniejszych przypadkach wskazuj¹c na problemy, które mog¹ siê pojawiæ podczas próby dopasowania przyk³adu o bardziej skomplikowanym opisie. W ostatniej czêœci opiszemy, jak z czasem mo¿na wp³ywaæ na jakoœæ dzia³ania algorytmu. Poprzez iteracyjne generowanie drzewa na podstawie istniej¹cego zbioru danych mo¿emy stale wp³ywaæ na poprawê dzia³ania algorytmu.
+
+%---------------------------------------------------------------------------
+
+\section{Proste przyk³ady}
+\label{sec:prostePrzyklady}
+
+W tej czêœci poka¿emy przyk³ady u¿ycia algorytmu u¿ywaj¹c prostych zadañ, które bêdziemy chcieli dopasowaæ w podobny sposób jak w etapie przygotowania danych do generowania drzewa.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Opis badañ}
+
+\subsubsection*{Nowe zadanie wymagaj¹ce wiedzy z OPC serwera}
+
+W naszej firmie znajduje siê tylko jeden specjalista serwera OPC. Dlatego te¿, dowolnie zdefiniowane zadanie, zawieraj¹ce tê umiejêtnoœæ jako wymagan¹, zawsze trafi do pracownika z loginem~\emph{konrad}. Pocz¹tkowo jednak definiujemy tylko obszar jako~\emph{Services}. Algorytm rozszerzony wskazuje wówczas na pracownika~\emph{jacek}, natomiast podstawowa wersja algorytmu ju¿ wskazuje na pracownika~\emph{konrad}. Wynika to z faktu, ¿e najwiêcej zadañ z przypisanym obszarem dotycz¹cym serwisów jest do tych dwóch pracowników. W zale¿noœci od wyboru algorytmu, podstawowy algorytm promuje argument wielowartoœciowy (\emph{Area}), przez co wskazuje na osobê, która ma najwiêcej przypisanych zadañ z~\emph{service}. Drugi algorytm promuje wartoœæ zysku informacyjnego kolejnych atrybutów wyliczan¹ w odpowiednim stosunku iloœciowym mo¿liwych wartoœci parametru. Tak zbudowane drzewo wskazuje w³aœnie na pracownika z loginem~\emph{jacek}.
+
+Jednak¿e, wystarczy dodaæ interesuj¹c¹ nas umiejêtnoœæ~\emph{OPC Fundamentals}, aby ka¿de nastêpne wskazanie obu wersji algorytmu dawa³o w wyniku login~\emph{konrad}. Jest to tylko po³owiczna prawda, poniewa¿ tak dzia³a tylko wersja rozszerzona algorytmu, która promuje zysk informacyjny osi¹gany w³aœnie z informacji, ¿e tylko jedna osoba jest specjalist¹ danej dziedziny. Prostszy algorytm promuje jako bardziej wartoœciowy atrybut zwi¹zany z obszarem, przez co wskazania na inne umiejêtnoœci, którymi nie cechuje siê nasza osoba mo¿e wskazaæ na inn¹ osobê i bêdzie wymagaæ od niej nauki specjalistycznej umiejêtnoœci. W zale¿noœci od punktu widzenia, menad¿er decyduje czy jest to dobry czy z³y pomys³.
+
+\subsubsection*{Dodanie kolumny do bazy danych Oracle}
+
+Definiujemy dla zadania pocz¹tkowo tylko jego obszar --~\emph{Database}. Obie wersje algorytmów wskazuj¹ na: grzesiul~(\emph{specjalista od bazy danych Ms Sql Server} - wersja rozszerzona algorytmu) oraz na bogumil~(\emph{specjalista od bazy danych Oracle} - wersja zoptymalizowana algorytmu). Wybór jest jak najbardziej poprawny ze wzglêdu na to, ¿e obaj pracownicy maj¹ przypisan¹ do siebie najwiêksz¹ iloœæ zadañ zwi¹zanych z bazami danych. Dodanie umiejêtnoœci~\emph{Oracle} - czyli wyspecjalizowanie zadania sprawia, ¿e obie wersje algorytmu wskazuj¹ na pracownika~\emph{bogumil}, czyli osi¹gamy efekt oczekiwany.
+
+\subsubsection*{Rozpisanie zadañ zwi¹zanych z nowym projektem obszaru lokalizacja}
+
+W tym momencie, chcemy aby zasugerowanym loginem pracownika by³~\emph{karlik}. Jest to lider zespo³u, który miêdzy innymi zajmuje siê lokalizacj¹ i globalizacj¹, wiêc nasze wskazanie jest jak najbardziej trafne. Pocz¹tkowo dodajemy zadanie okreœlaj¹c obszar jako~\emph{Organization}. Dwie wersje algorytmu wskazuj¹ na dwóch pracowników:~\emph{karlik} oraz \emph{zuber}. Obaj wymienieni pracownicy s¹ osobami zarz¹dzaj¹cymi, tak¿e wskazanie jest trafne. Jedyn¹ dodatkow¹ rzecz¹ jak¹ chcemy wyspecyfikowaæ, jest wymagana umiejêtnoœæ~\emph{Localization Fundamentals}. Niestety jedynie rozszerzony argument wskazuje teraz w³aœciw¹ osobê, algorytm podstawowy nie potrafi wskazaæ ¿adnej osoby - mo¿e to wskazywaæ za brak przyk³adów ucz¹cych na podstawie których, podstawowy algorytm móg³by udzieliæ poprawnej odpowiedzi. Do przyk³adu tego wrócimy w czêœci dotycz¹cej iteracyjnego uczenia siê.
+
+\subsubsection*{Poprawienie b³êdów w kontrolce silverlight, wykorzystuj¹cej kod napisany w jêzyku VB.net}
+
+W tym przyk³adzie mamy podobn¹ sytuacjê do wczeœniej omawianego zadania zwi¹zanego z serwerem OPC, z t¹ ró¿nic¹, ¿e nasz¹ specjalizacj¹ jest po³¹czenie dwóch umiejêtnoœci:~\emph{VB.net Programming} oraz \emph{Silverlight Fundamentals}. Te dwie umiejêtnoœci s¹ znane równie¿ innym pracownikom, ale tylko pracownik z loginem~\emph{tomasz} zna obie naraz. Dodatkowo, nasze zadanie dotyczy obszaru~\emph{Business Process Studio}, z którego oczekiwany pracownik jest specjalist¹. Utworzone zadanie z przypisanym tylko obszarem ju¿ na samym pocz¹tku wskazuje oczekiwan¹ przez nas osobê ze wzglêdu na iloœæ zadañ zwi¹zanych z tym obszarem przypisanych do tej osoby. Zmienimy teraz zadanie tak, aby obszar dotyczy³ organizacji projektu. Tak jak w poprzednim przyk³adzie, wskazywanymi osobami s¹~\emph{karlik} oraz \emph{zuber}. Dodamy teraz dwie specyficzne umiejêtnoœci i zobaczymy, czy pomo¿e to algorytmowi w zasugerowaniu odpowiedniej osoby. Niestety brak jakichkolwiek powi¹zañ z tym obszarem naszej osoby wp³ywaj¹ na to, ¿e niezale¿nie od wybranych umiejêtnoœci jest pomijana jako w³aœciwa osoba do realizacji zadania. Do przyk³adu tego wrócimy w dalszej czêœci dotycz¹cej iteracyjnego uczenia siê.
+
+\subsubsection*{Dodawanie skryptów odœwie¿aj¹cych schemat bazy danych - wykorzystanie XML}
+
+Kolejne zadanie, które teoretycznie wskazuje na specjalistê posiadaj¹cego kilka wymaganych umiejêtnoœci do realizacji tego zadania --~\emph{grzesiul}. Wspominane umiejêtnoœci to:~\emph{Ms Sql Server Fundamentals} oraz \emph{XML Framework Fundamentals}. Podobnie jak powy¿sze zadanie zwi¹zane z bazami danych, okreœlenie samego obszaru wskazuje na dwóch specjalistów (ka¿dy przez inn¹ wersjê algorytmu) z zakresu baz danych. Dodanie kolejnych dwóch wymaganych umiejêtnoœci bezpoœrednio wskazuje nam na oczekiwan¹ osobê, tj. pracownika z loginem~\emph{grzesiul}.
+
+\subsubsection*{Dodanie serwisu WCF do portalu Sharepoint}
+
+Zadanie to równie¿ skupia siê na unikalnym po³¹czeniu dwóch umiejêtnoœci, \emph{Sharepoint} oraz \emph{WCF Fundamentals}. Równie¿ jedna osoba posiada naraz te dwie umiejêtnoœci. Jest to pracownik z loginem~\emph{jarek}. Po dodaniu nowego zadania z przypisanym tylko obszarem~\emph{Web Portal}, wskazanie obu wersji algorytmu pokazuje login~\emph{grzesiek}, czyli osoby, która najczêœciej w przyk³adach jest wi¹zana z danym obszarem. Jednak dodanie jednej umiejêtnoœci \emph{Sharepoint} zaczyna wskazywaæ na osobê~\emph{zuber}, który z kolei czêœciowo jest powi¹zany z obszarem portalu oraz jest specjalist¹ z zakresu~\emph{Sharepoint}. Ostatecznie, po dodaniu umiejêtnoœci~\emph{WCF Fundamentals} obie wersje algorytmu zgodnie wskazuj¹ na oczekiwan¹ przez nas osobê, czyli pracownika z loginem~\emph{jarek}.
+
+Na tym koñczymy nasze badania i analizy dotycz¹ce prostych przyk³adów. W dalszej czêœci skupimy siê na bardziej skomplikowanych przyk³adach przez co jednoczeœnie jeszcze ciekawszych.
+
+%---------------------------------------------------------------------------
+
+\section{Zaawansowane próby klasyfikacji}
+\label{sec:zaawansowanePrzyklady}
+
+Po serii przyk³adów opartych na prostych scenariuszach, spróbujemy teraz przeanalizowaæ jak algorytm zachowuje siê przy bardziej skomplikowanych przypadkach. W dalszej czêœci, dotycz¹cej iteracyjnego uczenia siê przeanalizujemy te przypadki z tego rozdzia³u, które nie zostan¹ dopasowane w sposób jaki byœmy sobie tego ¿yczyli.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Opis badañ}
+
+\subsubsection*{Rozplanowanie projektu stworzenia nowych serwisów wraz z warstw¹ prezentacji do wspó³pracy z systemem SAP}
+
+Zadanie to wymaga umiejêtnoœci zwi¹zanych z obszarem~\emph{Organization}, wiêc mo¿na myœleæ ¿e wyborem menad¿era by³aby jedna z osób zarz¹dzaj¹cymi zespo³ami programistów. Z drugiej strony, zadanie wymaga znajomoœci wielu technologii, takich jak~\emph{BizTalk Server Administration Fundamentals}, \emph{WCF Fundamentals}, \emph{IIS Administration Fundamentals}, \emph{ASP.NET Fundamentals}, \emph{JavaScript Fundamentals} oraz \emph{Architecture Fundamentals}. Taka znajomoœæ technologii pozwoli w sposób swobodny zrealizowaæ zadanie. Niestety, w naszej firmie nie ma takich ludzi i algorytm bêdzie musia³ wskazaæ jego zdaniem najbardziej dopasowan¹ osobê. Wersja uproszczona algorytmu nie podo³a³a zadaniu i nie znalaz³a ¿adnego odpowiadaj¹cego kandydata. Natomiast wersja rozszerzona algorytmu wskaza³a na osobê z loginem~\emph{igor}. Osoba ta zosta³a wskazana ze wzglêdu na unikalne po³¹czenie w ca³ej firmie dwóch umiejêtnoœci: \emph{BizTalk Server Administration Fundamentals} oraz \emph{WCF Fundamentals}. 
+
+Id¹c dalej, mo¿emy uznaæ ¿e zadanie to wymaga wiêkszej iloœci osób. Spróbujmy przeprowadziæ doœwiadczenie poprzez usuwanie umiejêtnoœci, które zosta³y spe³nione przez wybran¹ osobê do zespo³u zajmuj¹cego siê tym zadaniem. Pierwsz¹ tak¹ osob¹ bêdzie~\emph{igor}, zatem usuwamy dwie umiejêtnoœci powi¹zane z t¹ osob¹. W tym momencie, nasze dwie wersje algorytmu sugeruj¹ dwie nowe osoby. Wersja uproszczona sugerujê~\emph{karlik} jako odpowiedni¹ osobê. Wybór ten jest uzasadniony promowaniem obszaru, jako atrybutu najbardziej decyzyjnego przez prostsz¹ wersjê algorytmu. Jako ¿e zadanie jest powi¹zane z obszarem organizacyjnym, wybrana zosta³a jedna z osób zarz¹dzaj¹cych zespo³ami. Wersja rozszerzona algorytmu wskazuje na~\emph{irek} ze wzglêdu na jego umiejêtnoœæ~\emph{ASP.NET Fundamentals}. Jako ¿e \emph{irek} jest równie¿ specjalist¹ z \emph{JavaScript}, równie¿ tê umiejêtnoœæ mo¿emy usun¹æ z naszego zadania, jako spe³nione wymaganie. Trzymamy siê naszego pierwszego wyboru i postêpujemy zgodnie z rozszerzon¹ wersj¹ algorytmu. Zespó³ sk³ada siê teraz z osób~\emph{igor} oraz \emph{irek}. Po usuniêciu tej umiejêtnoœci, obie wersje wskazuj¹ na~\emph{karlik}. W tym momencie nasz zespó³ sk³ada siê ju¿ z lidera zespo³u i dwóch specjalistów. Pozostaj¹ce umiejêtnoœci s¹ powi¹zane z serwisami internetowymi, dlatego teraz po dodaniu lidera zespo³u zmienimy typ zadania na \emph{Services}. Otrzymujemy wskazania na dwie osoby, przy czym rozszerzony algorytm wskazuje na~\emph{jacek}, który spe³nia wymagane dwie umiejêtnoœci, oraz prostszy algorytm wskazuje na~\emph{konrad}, który zosta³ wybrany ze wzglêdu na wiêksz¹ iloœæ zadañ przypisanych do niego w zakresie obszaru~\emph{Services}. Finalnie, otrzymaliœmy kompletny zespó³, który spe³nia pocz¹tkowe wymagania wobec zadania.
+
+\subsubsection*{Stworzyæ ulepszony model bezpieczeñstwa dla g³ównej aplikacji}
+
+Kolejne zadanie jest dosyæ enigmatyczne i raczej pojawia siê najczêœciej jako meta wymaganie podczas tworzenia projektów. Zadanie technologicznie bêdzie obejmowaæ wiêkszoœæ umiejêtnoœci technicznych wykorzystywanych w produkcie naszej firmy. Oprócz obszaru, ustawionego jako \emph{Security} wymagamy nastêpuj¹cych umiejêtnoœci:  \emph{Architecture Fundamentals}, \emph{ASP.NET Fundamentals}, \emph{IIS Administration Fundamentals}, \emph{WCF Programming}, \emph{OPC Fundamentals}, \emph{Sharepoint}, \emph{Silverlight Fundamentals}, \emph{Oracle Database}, \emph{Ms Sql Server}, \emph{BizTalk Server Administration Fundamentals}, \emph{COM Fundamentals} oraz \emph{JavaScript Programming}.
+
+Pierwsze dopasowanie daje nam dwie ró¿ne osoby. Algorytm rozszerzony wskazuje na \emph{konrad}, czyli specjalistê od \emph{OPC Fundamentals}, natomiast drugi algorytm (prostszy) jak zwykle skupia siê wokó³ obszaru i wskazuje na specjalistê od bezpieczeñstwa - \emph{jarek}. Równie¿ w tym przypadku, skupimy siê wokó³ wyborów rozszerzonego algorytmu, gdy¿ wed³ug naszej opinii s¹ trafniejsze.
+
+Po dodaniu do zespo³y pierwszego cz³onka i usuniêciu umiejêtnoœci, kolejne sugestie wskazuj¹ jednog³oœnie na pracownika z loginem \emph{jarek}. Wskazanie na jarka w rozszerzonym algorytmie pad³o, dziêki jego po³¹czeniu wiedzy z dwóch umiejêtnoœci: \emph{Sharepoint} oraz \emph{WCF Fundamentals}. Dodatkowo, po analizie umiejêtnoœci wybranej osoby stwierdzamy, ¿e równie¿ mo¿emy wykorzystaæ jego umiejêtnoœæi: \emph{ASP.NET Fundamentals}, \emph{IIS Administration Fundamentals} oraz \emph{JavaScript Programming}. Nie wykorzystujemy umiejêtnoœci \emph{Architecture Fundamentals}, któr¹ posiada \emph{jarek} ze wzglêdu na jej jedynie podstawowy poziom opanowania. Jest to decyzja nasza, która mog³a by zostaæ dodana do algorytmu jako rozszerzenie. Dziêki rozleg³ej wiedzy wybranej aktualnie osoby, mo¿emy usun¹æ spor¹ czêœæ umiejêtnoœci wymaganych w zadaniu, poniewa¿ zosta³y spe³nione. Dodatkowo, jako ¿e \emph{jarek} jest specjalist¹ z obszaru \emph{Security} (dopasowanie podstawowej wersji algorytmu), mo¿emy teraz zmieniæ interesuj¹cy nas obszar na \emph{Organization}, gdy¿ potrzebujemy równie¿ kogoœ, kto bêdzie w odpowiedni sposób zarz¹dza³ przedsiêwziêciem, czyli po prostu realizacj¹ zadania.
+
+Próba dopasowania kolejnej osoby koñczy siê wskazaniem na dwie ró¿ne osoby. Tak jak przypuszczaliœmy, prostsza wersja algorytmu wskazuje na osobê powi¹zan¹ z aktualnym obszarem (\emph{Organization}), czyli na \emph{karlik}. Wersja rozszerzona wskazuje na specjalistê z obszaru \emph{BizTalk Server Administration Fundamentals}. Dodatkowo \emph{marcin} posiada wymagan¹ przez nas umiejêtnoœæ \emph{COM Fundamentals}. Id¹c za tokiem postêpowania w poprzednich krokach, znów potwierdzamy wybór rozszerzonej wersji algorytmu i \emph{marcin} do³¹cza do zespo³u, a my mo¿emy uznaæ kolejne dwie umiejêtnoœci za spe³nione.
+
+Ponownie w kolejnym kroku dwie wersje algorytmu wskazuj¹ na dwie ró¿ne osoby. Prostsza wersja algorytmu nadal przystajê przy wyborze \emph{karlik}, natomiast rozszerzona wersja algorytmu wskazuje na kolejnego specjalistê, tym razem z dziedziny baz danych - \emph{bogumil}. Wybrany specjalista z baz danych dysponuje trzema interesuj¹cymi z punktu widzenia omawianego zadania umiejêtnoœciami: \emph{Oracle Database}, \emph{Ms Sql Server} oraz \emph{Architecture Fundamentals}. Dziêki kolejnemu wyborowi zgodnemu z rozszerzon¹ wersj¹ algorytmu mo¿emy uznaæ kolejne trzy umiejêtnoœci za spe³nione i dodaæ \emph{bogumil} do zespo³u. Aktualnie w zespole mamy czterech specjalistów: \emph{konrad}, \emph{jarek}, \emph{marcin} oraz \emph{bogumil}. Zmniejszaj¹ca siê iloœæ wymaganych jeszcze umiejêtnoœci oraz pozostaj¹ce nadal ustawienie obszaru na \emph{Organization} pozwala nam przypuszczaæ, ¿e nied³ugo równie¿ rozszerzona wersja algorytmu wska¿e na osobê zwi¹zan¹ z wymienionym obszarem.
+
+W kolejnym kroku nasze przypuszczenia siê ziszczaj¹. Jedyna ró¿nica wzglêdem poprzednich dopasowañ podstawowego algorytmu polega na tym, ¿e po usuniêciu umiejêtnoœci \emph{Architectural Fundamentals} specyficznej równie¿ dla osoby z loginem \emph{karlik}, która do tej pory by³a wskazywana przez tê wersjê algorytmu zostaje zast¹piona inn¹ osob¹. Osob¹ t¹ jest \emph{zuber}, który równie¿ jest w naszej firmie zarz¹dzaj¹cym zespo³em. Rozszerzona wersja wskazuje na \emph{karlik}. Bior¹c pod uwagê jednomyœlnoœæ z poprzednimi wyborami prostszego algorytmu, dodajemy do zespo³u \emph{karlik}. Teraz, gdy mamy ju¿ osobê odpowiedzialn¹ za organizacjê pracy zadania, zmieniamy obszar na \emph{Business Process Studio}.
+
+Kolejn¹ i zarazem ostatni¹ osob¹ wybran¹ jednomyœlnie przez obie wersje algorytmu jest specjalista z wybranego obszaru (\emph{Business Process Studio}) - \emph{tomasz}. Dodatkowo osoba ta dysponuje ostatni¹ brakuj¹c¹ w naszym zespole umiejêtnoœci¹ - \emph{Silverlight Fundamentals}. Finalnie po szeœciu krokach otrzymujemy kompletny zespó³ spe³niaj¹cy wszystkie wymagania dotycz¹ce omawianego zadania.
+
+W ostatniej czêœci rozdzia³u zwi¹zanego z badaniami wykorzystania algorytmu drzew decyzyjnych skupimy siê na iteracyjnej poprawie jakoœci dzia³ania naszego drzewa decyzyjnego.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+%---------------------------------------------------------------------------
+
+\section{Iteracyjne uczenie siê}
+
+W tej czêœci skupimy siê na tym, jak mo¿emy poprawiæ b³êdne decyzje algorytmu lub ich brak poprzez dodawanie nowych przyk³adów i ponowne uczenie siê drzewa decyzyjnego. Na pocz¹tku skupimy siê na przyk³adach opisywanych w pierwszej czêœci rozdzia³u, przed którymi postawiliœmy znak zapytania. Nastêpnie omówimy kilka interesuj¹cych przyk³adów, które pozwol¹ nam pokazaæ si³ê w iteracyjnym uczeniu siê algorytmu.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection {Nawi¹zanie do nierozwi¹zanych przyk³adów - opis badañ}
+
+\subsubsection*{Rozpisanie zadañ zwi¹zanych z nowym projektem obszaru lokalizacja}
+
+W zadaniu mamy zdefiniowany obszar \emph{Organization} oraz wymagan¹ umiejêtnoœæ \emph{Localization Fundamentals}. Przyk³ad wydaje siê stosunkowo prosty, zw³aszcza ¿e obszar jak i umiejêtnoœæ s¹ specyficzne dla \emph{karlik}, którego oczekujemy jako wskazanego pracownika. Niestety tylko rozszerzony algorytm wskazuje prawid³owo osobê, algorytm podstawowy nie znajduje osoby, któr¹ móg³by dopasowaæ do danego zadania. Problem prostszej wersji algorytmu polega na zbytnim powi¹zaniu pary umiejêtnoœci: \emph{Localization Fundamentals} oraz \emph{Architecture Fundamentals} z osob¹ \emph{karlik}. Dzieje siê tak, poniewa¿ tylko jedno zadanie posiadaj¹ce umiejêtnoœæ zwi¹zan¹ z lokalizacj¹ jest zdefiniowane w naszych danych ucz¹cych. Jednoczeœnie to samo zadanie zawiera powi¹zanie z umiejêtnoœci¹ \emph{Architecture Fundamentals}, przez co algorytm traktuje je jako wymagane ³¹cznie i nie mo¿e dopasowaæ nam w³aœciwej osoby.
+
+Dodamy jedno proste zadanie, które bêdzie dotyczy³o obszaru \emph{Organization} i zawiera³o jedn¹ umiejêtnoœæ \emph{Localization Fundamentals}. Po ponownym wygenerowaniu danych i wygenerowaniu nowo nauczonego drzewa decyzyjnego, równie¿ prostsza wersja algorytmu powinna wskazaæ w³aœciw¹ osobê. Czêœæ wygenerowanego drzewa przez prosty algorytm przed zmian¹ danych ucz¹cych mo¿na zobaczyæ poni¿ej~\ref{lst:drzewoDecyzyjneLokalizacja}.
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{lstlisting}[caption={Fragment wygenerowanego drzewa decyzyjnego przez prostsz¹ wersjê algorytmu}, language=Java, frame = trBL, mathescape=true, label={lst:drzewoDecyzyjneLokalizacja}]
+if( Area == "Organization") {
+	if( Architecture Fundamentals == "False") {
+		if( WCF Programming == "True") {
+				Employee = "jacek";
+		} else if( WCF Programming == "False") {
+			if( Localization Fundamentals == "True") {
+					Employee = "null";
+			} else if( Localization Fundamentals == "False") {
+				if( IIS Administration Fundamentals == "True") {
+						Employee = "null";
+				} else if( IIS Administration Fundamentals == "False") {
+					if( WPF Programming == "False") {
+						if( WF Programming == "False") {
+								Employee = "zuber";
+						} else if( WF Programming == "True") {
+								Employee = "marcin";
+						}
+					} else if( WPF Programming == "True") {
+							Employee = "szymon";
+					}
+				}
+			}
+		}
+	} else if( Architecture Fundamentals == "True") {
+		if( WCF Programming == "True") {
+				Employee = "null";
+		} else if( WCF Programming == "False") {
+			if( OPC Fundamentals == "False") {
+					Employee = "karlik";
+			} else if( OPC Fundamentals == "True") {
+					Employee = "konrad";
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{lstlisting}[caption={Fragment wygenerowanego drzewa decyzyjnego przez prostsz¹ wersjê algorytmu dla wzbogaconych danych ucz¹cych - iteracyjne uczenie siê}, language=Java, frame = trBL, mathescape=true, label={lst:drzewoDecyzyjneLokalizacjaPoprawione}]
+if( Area == "Organization") {
+	if( Localization Fundamentals == "True") {
+		if( WCF Programming == "True") {
+				Employee = "jacek";
+		} else if( WCF Programming == "False") {
+				Employee = "karlik";
+		}
+	} else if( Localization Fundamentals == "False") {
+		if( WCF Programming == "True") {
+				Employee = "null";
+		} else if( WCF Programming == "False") {
+			if( IIS Administration Fundamentals == "True") {
+					Employee = "null";
+			} else if( IIS Administration Fundamentals == "False") {
+				if( Architecture Fundamentals == "False") {
+					if( WPF Programming == "False") {
+						if( WF Programming == "False") {
+								Employee = "zuber";
+						} else if( WF Programming == "True") {
+								Employee = "marcin";
+						}
+					} else if( WPF Programming == "True") {
+							Employee = "szymon";
+					}
+				} else if( Architecture Fundamentals == "True") {
+					if( OPC Fundamentals == "False") {
+							Employee = "karlik";
+					} else if( OPC Fundamentals == "True") {
+							Employee = "konrad";
+					}
+				}
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+Po dodaniu jednego zadania do danych ucz¹cych uzupe³niaj¹cego wiedzê drzewa decyzyjnego, bez problemu równie¿ prosta wersja algorytmu drzew decyzyjnych wskazuje na w³aœciw¹ osobê. Zmiany w interesuj¹cej czêœci drzewa mo¿na zobaczyæ na wycinku drzewa~\ref{lst:drzewoDecyzyjneLokalizacjaPoprawione}. Poprawa drzewa zwiêksza jakoœæ dopasowywania przyk³adów przez drzewo decyzyjne we wszystkich podobnych przypadkach.
+
+\subsubsection*{Poprawienie b³êdów w kontrolce silverlight, wykorzystuj¹cej kod napisany w jêzyku VB.net}
+
+Jest to kolejne zadanie, które pojawi³o siê ju¿ wczeœniej i jest zwi¹zane z problemami niedouczenia drzewa decyzyjnego (lub przeuczenia). Chcemy, aby dwie specyficzne umiejêtnoœci: \emph{Silverlight Fundamentals} oraz \emph{VB.net Programming} posiadane razem tylko przez jedn¹ osobê, pozwoli³y na wskazanie przez algorytm tej w³aœnie osoby.
+
+Pytanie dlaczego jednak nie zosta³ odpowiedni pracownik dopasowany ju¿ teraz, pozostaje nadal aktualne. Odpowiedzi nale¿y szukaæ w niewielkiej iloœci zadañ ³¹cz¹cych te dwie umiejêtnoœci, a zw³aszcza fakt ¿e tylko jedno zadanie posiada wyspecyfikowane tylko te dwie umiejêtnoœci bez ¿adnych dodatkowych. Sprawia to, ¿e zysk informacyjny w obu wersjach algorytmu dla tych dwóch umiejêtnoœci jest na tyle niewielki, ¿e jest pomijany na korzyœæ innych kombinacji atrybutów posiadaj¹cych wiêkszy zysk informacyjny. Aby poprawiæ sytuacjê, spróbujemy dodaæ jedno zadanie posiadaj¹ce te dwie umiejêtnoœci i przypisany obszar \emph{Organization}, dla którego chcemy wskazaæ programistê \emph{tomasz} jako preferowan¹ osobê. Tak jak przypuszczaliœmy, po dodaniu tej specyficznej wiedzy do danych ucz¹cych algorytm dzia³a tak, jak tego oczekujemy dla podobnych przypadków.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection {Pozosta³e przyk³ady - opis badañ}
+
+W tej czêœci skupimy siê na analizie wygenerowanego drzewa i próbie poprawy jakoœci dzia³ania drzewa decyzyjnego poprzez dodanie nowych przyk³adów ucz¹cych.
+
+\subsubsection*{Niedouczenie drzewa decyzyjnego}
+
+Niedouczenie drzewa decyzyjnego jest ³atwe do weryfikacji, kiedy mamy przed oczami wygenerowane drzewo decyzyjne. Wystarczy przeanalizowaæ œcie¿ki które prowadz¹ do kategorii równej wartoœci \emph{null}, czyli w³aœciwie to braku kategorii.
+
+Zaczniemy od analizy drzewa dla rozszerzonego algorytmu. Ciekawostk¹ jest fakt, ¿e mamy w tym drzewie tylko jedn¹ œcie¿kê prowadz¹c¹ do braku dopasowanej kategorii. Œcie¿kê tê mo¿na zobaczyæ w wycinku drzewa~\ref{lst:brakKategoriiDrzewo}. W zasadzie œcie¿ka jest spe³niona gdy zadanie nie posiada ¿adnej z umiejêtnoœci: \emph{OPC Fundamentals}, \emph{BizTalk Server Administration Fundamentals}, \emph{Sharepoint}, \emph{ASP.NET Fundamentals}, \emph{XML Framework Fundamentals} oraz \emph{Oracle Database} i ma ustawiony obszar na \emph{BusinessIntelligence}.
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{lstlisting}[caption={Fragment wygenerowanego drzewa decyzyjnego przez rozszerzon¹ wersjê algorytmu - œcie¿ka do pustej kategorii}, language=Java, frame = trBL, mathescape=true, label={lst:brakKategoriiDrzewo}]
+if( OPC Fundamentals == "False") {
+	if( BizTalk Server Administration Fundamentals == "False") {
+		if( Sharepoint == "False") {
+			if( ASP.NET Fundamentals == "False") {
+				if( XML Framework Fundamentals == "False") {
+					if( Oracle Database == "False") {
+						if( Area == "Organization") {
+							...
+						} else if( Area == "Database") {
+								...
+						} else if( Area == "BusinessIntelligence") {
+								Employee = "null";
+						}
+					}
+				} else if( XML Framework Fundamentals == "True") {
+					...
+				}
+			} else if( ASP.NET Fundamentals == "True") {
+				...
+			}
+		} else if( Sharepoint == "True") {
+			...
+		}
+	} else if( BizTalk Server Administration Fundamentals == "True") {
+		...
+	}
+}
+\end{lstlisting}
+
+W takiej sytuacji wystarczy jedynie utworzyæ odpowiednie zadanie ze zdefiniowan¹ osob¹, a nasze drzewo stanie siê kompletne. Jedynym problemem, który mo¿e póŸniej wyst¹piæ jest przeuczenie drzewa decyzyjnego. Problem ten zostanie omówiony w dalszej czêœci.
+
+Dla drzewa wygenerowanego przez prostszy algorytm mamy a¿ 23 œcie¿ki prowadz¹ce do pustej kategorii. Przy czym nale¿y zauwa¿yæ, ¿e drzewo dla prostszego algorytmu jest p³ytsze i d³u¿sze co wynika bezpoœrednio z preferowania obszarów wzglêdem umiejêtnoœci (ze wzglêdu na liczbê wartoœci). Prowadzi to te¿ do wiêkszej iloœci krótkich œcie¿ek, a bior¹c pod uwagê, ¿e jednak umiejêtnoœci czêœciej wystêpuj¹ ni¿ obszary (jeden na zadanie) czêœciej wystêpuje problem niedouczenia. Co prawda czêœæ z tych œcie¿ek pokrywa siê ze œcie¿k¹ drzewa algorytmu rozszerzonego to i tak du¿o korzystniej pod tym wzglêdem wypada w³aœnie algorytm rozszerzony.
+
+\subsubsection*{Przeuczenie drzewa decyzyjnego}
+
+Dok³adne informacje na temat jak radziæ sobie z przeuczeniem drzewa decyzyjnego wraz z odniesieniami do szczegó³owych treœci traktuj¹cych na ten temat znajdziemy w rozdziale~\ref{cha:uczenieMaszynowe}. W tej czêœci skupimy siê jedynie na prostym i skutecznym postêpowaniu w przypadku przeuczenia dla naszego systemu, algorytmu i danych.
+
+Reagowanie na wydarzenie, czyli reakcja podczas gdy sugestia algorytmu jest b³êdna polegaj¹ca na przypisaniu zadania przez menad¿era. Postêpowanie takie w sposób iteracyjny polepsza jakoœæ dzia³ania naszego algorytmu, wymaga jednak interwencji menad¿era. Z czasem, algorytm co raz rzadziej potrzebuje uwagi menad¿era maj¹c coraz bardziej kompletn¹ bazê wiedzy. Postêpowanie to dotyczy obu wersji algorytmów w taki sam sposób, poniewa¿ ¿adna z zaimplementowanych przez nas wersji algorytmu nie ma wsparcia przy zapobieganiu przeuczeniu drzewa. Wsparcie takie ma implementacja algorytmu C4.5~\cite{Quin93}, który jest naturalnym rozszerzeniem algorytmów zaimplementowanych dla potrzeb naszej pracy.
+
+%---------------------------------------------------------------------------
+
+\section{Podsumowanie}
+
+Przedstawione przyk³ady i analiza w danym rozdziale pozwoli zrozumieæ co zyskujemy i na co musimy uwa¿aæ podczas u¿ywania algorytmu drzewa decyzyjnego w konkretnym istniej¹cym systemie. Podkreœlone zosta³o znaczenie iteracyjnego uczenia siê, które przy pocz¹tkowym za³o¿eniu interakcji algorytmu z menad¿erem (weryfikacja wyniku) z czasem pozwala ograniczyæ tê interakcjê do minimum. Warto te¿ wzi¹æ pod uwagê, ¿e dla rzeczywistych baz danych które s¹ znacz¹co wiêksze od tej prezentowanej w przyk³adach, otrzymujemy bardziej kompletne i dok³adniejsze drzewo.
+
+Na koniec przedstawimy w postaci tabel zebrane informacje z przeprowadzonych badañ. Pierwsza tabela~\ref{tab:eksperymentyJeden} zawiera dane dotycz¹ce sekcji z prostymi przyk³adami~\ref{sec:prostePrzyklady}, natomiast druga tabela~\ref{tab:eksperymentyWiele} zawiera dane dotycz¹ce sekcji z bardziej zaawansowanymi przyk³adami~\ref{sec:zaawansowanePrzyklady}. Obie tabele zawieraj¹ nazwê obszaru, liczbê atrybutów, wynik dopasowania dla algorytmu podstawowego oraz wynik klasyfikacji dla algorytmu rozszerzonego.
+
+Ka¿da tabela skonstruowana jest tak, aby kolejnoœci¹ przyk³adów odpowiadaæ sekcj¹, do których siê odnosz¹. Dodatkowo ka¿dy przyk³ad analizowany wczeœniej, jest w tabelach przedzielony podwójnymi liniami. Gwiazdka wskazuje preferowany wybór, \emph{x} wskazuje brak dopasowanej kategorii.
+
+Osoby zainteresowane dog³êbniejsz¹ analiz¹ przyk³adów powinny powróciæ w tym momencie do rozdzia³u~\ref{cha:systemZarzadzaniaZadaniami}, a dok³adnie do sekcji~\ref{sec:przygotowanieDanych}, gdzie dok³adnie omówione s¹ zarówno obszary i umiejêtnoœci, jak i powi¹zania pomiêdzy nimi oraz pomiêdzy poszczególnymi pracownikami.
+
+\begin{table}[!htbp]
+\caption{Zestawienie eksperymentów klasyfikowania zadañ - przyk³ady jednokrotne}
+\label{tab:eksperymentyJeden}
+\begin{center}
+
+	\begin{tabular}{| l || c | l | l |}
+	\hline 
+	\textbf{Obszar} & \textbf{Liczba atr.} & \textbf{Prosty alg.} & \textbf{Rozszerzony alg.} \\ \hline \hline
+	Services & 0 & *konrad & jacek \\ \hline
+	Services & 1 & *konrad & *konrad \\ \hline
+	Services & 2 & *konrad & *konrad \\ \hline \hline
+	Database & 0 & *bogumil & grzesiul \\ \hline
+	Database & 1 & *bogumil & *bogumil \\ \hline \hline
+	Organization & 0 & zuber & *karlik \\ \hline
+	Organization & 1 & x & *karlik \\ \hline \hline
+	Business Process Studio & 0 & *tomasz & *tomasz \\ \hline
+	Business Process Studio & 2 & *tomasz & *tomasz \\ \hline
+	Organization & 2 & zuber & karlik \\ \hline \hline
+	Database & 0 & *bogumil & grzesiul \\ \hline
+	Database & 2 & *grzesiul & *grzesiul \\ \hline \hline
+	Web Portal & 0 & grzesiek & grzesiek \\ \hline
+	Web Portal & 1 & zuber & zuber \\ \hline
+	Web Portal & 2 & *jarek & *jarek \\ \hline \hline
+	\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[!htbp]
+\caption{Zestawienie eksperymentów klasyfikowania zadañ - przyk³ady wielokrotne}
+\label{tab:eksperymentyWiele}
+\begin{center}
+
+	\begin{tabular}{| l || c | l | l |}
+	\hline 
+	\textbf{Obszar} & \textbf{Liczba atr.} & \textbf{Prosty alg.} & \textbf{Rozszerzony alg.} \\ \hline \hline
+	Organization & 6 & x & *igor \\ \hline
+	Organization & 4 & karlik & *irek \\ \hline
+	Organization & 2 & *karlik & *karlik \\ \hline
+	Services & 2 & konrad & *jacek \\ \hline \hline
+	Security & 12 & jarek & *konrad \\ \hline
+	Security & 11 & *jarek & *jarek \\ \hline
+	Organization & 6 & karlik & *marcin \\ \hline
+	Organization & 4 & karlik & *bogumil \\ \hline
+	Business Process Studio & 1 & *tomasz & *tomasz \\ \hline \hline
+	\end{tabular}
+\end{center}
+\end{table}

@@ -1,0 +1,76 @@
+\documentclass[pdflatex,12pt]{aghdpl}
+\usepackage[polish]{babel}
+\usepackage[cp1250]{inputenc}
+
+% additional packages
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{pxfonts}
+\usepackage[none]{hyphenat}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{stmaryrd}
+
+
+\lstloadlanguages{TeX}
+
+%---------------------------------------------------------------------------
+
+\author{Jacek Spólnik}
+\shortauthor{}
+
+\titlePL{Zastosowanie metod uczenia maszynowego w systemie wspomagaj¹cym zarz¹dzanie zadaniami w przedsiêbiorstwie}
+\titleEN{The application of machine learning methods in the system supporting tasks management within an enterprise}
+% ...
+
+\shorttitlePL{Zastosowanie metod uczenia maszynowego w systemie wspomagaj¹cym zarz¹dzanie~zadaniami}
+\shorttitleEN{The application of machine learning methods in the system supporting tasks management within an enterprise}
+
+\thesistypePL{Praca magisterska}
+\thesistypeEN{The application of machine learning methods in the system supporting tasks management within an enterprise}
+
+\supervisorPL{dr in¿. Rafa³ Dre¿ewski}
+\supervisorEN{Rafa³ Dre¿ewski Ph.D}
+
+\date{2011}
+
+\departmentPL{Katedra Informatyki}
+\departmentEN{Department of Computer Science}
+
+\facultyPL{Wydzia³ Elektrotechniki, Automatyki, Informatyki i Elektroniki}
+\facultyEN{Faculty of Electrical Engineering, Automatics, Computer Science and Electronics}
+
+\acknowledgements{Dla Madzi, mojej ukochanej ¯ony}
+
+\setlength{\cftsecnumwidth}{10mm}
+
+\newtheorem{sample}{Przyk³ad}[chapter]
+
+%---------------------------------------------------------------------------
+
+\begin{document}
+
+\titlepages
+
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\clearpage
+
+\include{rozdzial1}
+\include{rozdzial2}
+\include{rozdzial3}
+\include{rozdzial4}
+\include{rozdzial5}
+%\include{rozdzial6}
+\include{zakonczenie}
+% ...
+\appendix
+\include{dodatekA}
+%\include{dodatekB}
+
+\bibliography{bibliografia}
+
+\end{document}

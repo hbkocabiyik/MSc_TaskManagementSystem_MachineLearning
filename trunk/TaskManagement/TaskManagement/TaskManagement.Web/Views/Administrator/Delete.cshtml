@@ -1,0 +1,50 @@
+﻿@model TaskManagement.Web.Models.Employee
+@using TaskManagement.Web.Helpers
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<fieldset>
+    <legend>Employee</legend>
+
+    <p>
+        <table>
+            <tr>
+                <th>Login</th>
+                <td>@Model.Login</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>@Model.Name</td>
+            </tr>
+            <tr>
+                <th>Surname</th>
+                <td>@Model.Surname</td>
+            </tr>
+            <tr>
+                <th>Employment Date</th>
+                <td>@String.Format("{0:yyyy-MM-dd}", Model.EmploymentDate)</td>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <td>@Model.Role</td>
+            </tr>
+            <tr>
+                <th>Position</th>
+                <td>@Html.GetPosition(@Model.PositionLevel, @Model.Role)</td>
+            </tr>
+        </table>
+    </p>
+</fieldset>
+@using (Html.BeginForm()) {
+    <p>
+        <input type="submit" value="Delete" /> |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+}
+
+

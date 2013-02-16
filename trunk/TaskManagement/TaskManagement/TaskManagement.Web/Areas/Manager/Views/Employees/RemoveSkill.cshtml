@@ -1,0 +1,29 @@
+﻿@model TaskManagement.Web.Models.Employee
+
+@{
+    ViewBag.Title = "Engineer Remove Skill";
+}
+
+<h2>Engineer Remove Skill</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+
+@using (Html.BeginForm()) {
+    <fieldset>
+    <legend>Employee</legend>
+
+        <div class="editor-label">
+            Skill
+        </div>
+        <div class="editor-field">
+            @Html.DropDownList("Skill")
+        </div>
+    </fieldset>
+    
+    <p>
+        <input type="submit" value="Delete" /> |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+}
+
+

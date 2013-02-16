@@ -1,0 +1,6 @@
+//Slab;Shape;Span
+//**************************************
+waffle;square;long
+waffle;rectangle;long
+two-way;square;short
+one-way;rectangle;short

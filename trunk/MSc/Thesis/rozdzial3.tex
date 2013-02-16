@@ -1,0 +1,603 @@
+\chapter{Implementacja algorytmu indukcji drzew decyzyjnych}
+\label{cha:implementacjaIndukcjiDrzew}
+
+W trzecim rozdziale skupimy siê na implementacji algorytmu ID3 oraz na jego rozszerzeniach. Bêdziemy w trakcie analizy algorytmu odwo³ywaæ siê do teorii zawartej w rozdziale~\ref{cha:uczenieMaszynowe}. Na sam koniec poka¿emy przyk³ady wykorzystania algorytmu wraz z testami poszczególnych komponentów algorytmu. Sam algorytm zosta³ zaimplementowany przy u¿yciu jêzyka C$\sharp$~\cite{CSharpWiki} i platformy .NET~\cite{DotNetWiki} z wykorzystaniem œrodowiska Visual Studio 2010~\cite{VisualStudio}.
+
+Wszystkie diagramy zosta³y utworzone z wykorzystaniem programu Visual Paradigm for UML~\cite{VisualParadigm}.
+%---------------------------------------------------------------------------
+
+\section{Opis implementacji algorytmu i warstwy przystosowania danych}
+\label{sec:opisImplementacjiAlgorytmu}
+
+W tej czêœci dokonamy analizy obiektowej implementacji algorytmu oraz opiszemy elementy warstwy przystosowania danych do pracy z algorytmem. W dalszej czêœci skupimy siê na analizie szczegó³owej pewnych czêœci implementacji. Analiza obiektowa bêdzie obejmowaæ diagramy klas i diagramy przep³ywu. Jednak na samym pocz¹tku skupimy siê na diagramie wysokiego poziomu - diagramie komponentów. Dodatkowo poka¿emy kilka przypadków u¿ycia algorytmu. 
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Analiza obiektowa}
+
+Nasz¹ analizê rozpoczniemy od omówienia zamieszczonego poni¿ej diagramu przypadków u¿ycia~\ref{rys:useCaseID3} dla naszego algorytmu. Przypadki u¿ycia s¹ stosunkowo proste. Aktorem (user) mo¿e byæ zarówno programista lub architekt bezpoœrednio pracuj¹cy z algorytmem lub wykorzystuj¹cy go zewnêtrzny system. Pocz¹tkowo, aktor wysy³a polecenie wygenerowania drzewa decyzyjnego. Algorytm wykorzystuje pewien zbiór danych do wygenerowania drzewa, które w póŸniejszym czasie bêdzie s³u¿y³o aktorowi do klasyfikacji kolejnych przyk³adów. Nastêpnie wysy³a zapytanie do wygenerowanego drzewa decyzyjnego, podaj¹c mu obiekt posiadaj¹cy pewne parametry i oczekuje dopasowania go do pewnej kategorii. Drzewo decyzyjne przetwarza podany przyk³ad i jako wynik zwraca kategoriê, do której powinien zostaæ przypisany.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{UseCase_ID3.PNG}}
+    \caption{Przypadek u¿ycia dla algorytmu drzew decyzyjnych}
+    \label{rys:useCaseID3}
+    \end{center}
+\end{figure}
+
+Przeanalizujemy teraz diagram komponentów~\ref{rys:componentDiagram}. Wyró¿niamy nastêpuj¹ce elementy:
+\begin{itemize}
+\item \textbf{System} odpowiada aktorowi z diagramu~\ref{rys:useCaseID3}. Przewa¿nie taki system operuje na zbiorze danych, który nie jest dopasowany do pracy z specyficznym formatem wymaganym przez algorytm. Dlatego pierwszym krokiem jaki wykonujemy, jest wykorzystanie komponentu \emph{Data Transformator} do transformacji danych (System Specific Data) tak, aby wygenerowane drzewo mog³o wykorzystaæ ten zbiór. Dodatkowo, programista odpowiedzialny za integracje miêdzy \emph{Systemem}, a \emph{Data Transormatorem} musi dostarczyæ plik mapowania danych, na podstawie którego transformacja danych bêdzie wykonana. Dok³adne omówienie tego mechanizmu znajdziemy w dalszej czêœci rozdzia³u,
+\item \textbf{Data Transformator} wspominany powy¿ej komponent, s³u¿y do przekszta³cania zbioru danych specyficznego dla \emph{Systemu} (System Specific Data) do postaci zgodnej z naszym algorytmem (Transformated Data),
+\item \textbf{Data Loader} prosty komponent wczytuj¹cy zbiór danych w specyficznej dla naszego algorytmu postaci,
+\item \textbf{Decision Tree Algorithm} rozszerzona implementacja algorytmu ID3~\ref{sec:algoytmyIndukcjiDrzewDecyzyjnychSchematOgolny} opisywana w tym rozdziale, wykorzystuje komponent \emph{Data Loader} do wczytania zbioru danych w celu wygenerowania drzewa decyzyjnego. Po wygenerowaniu drzewa, pozwala na klasyfikowanie obiektów zgodnych ze schematem dostarczonych danych.
+
+\end{itemize}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{ComponentDiagram.png}}
+    \caption{Diagram komponentów - przetwarzanie danych przez algorytm drzew decyzyjnych}
+    \label{rys:componentDiagram}
+    \end{center}
+\end{figure}
+
+Mamy teraz ogólny widok na strukturê algorytmu i komponentów dodatkowych, wspieraj¹cych warstwê przetwarzania danych. W dalszej czêœci skupimy siê na omówieniu dok³adnie poszczególnych komponentów, zaczynaj¹c od czêœci transformuj¹cej dane specyficzne dla wykorzystuj¹cego algorytm systemu.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Data Transformator}
+\label{sec:dataTransformator}
+\begin{figure}[htb!]
+    \begin{center}
+    \fbox{\includegraphics{DataTransformatorClassDiagram.png}}
+    \caption{Diagram klas - komponent przetwarzaj¹cy dane}
+    \label{rys:dataTransformatorClass}
+    \end{center}
+\end{figure}
+
+Komponent ten odpowiedzialny jest za transformacje danych, z formatu specyficznego dla klienta do formatu specyficznego dla naszego algorytmu drzew decyzyjnych. Jego struktura jest dosyæ prosta, widaæ j¹ na diagramie klas~\ref{rys:dataTransformatorClass}.
+
+Komponent posiada jedn¹ metodê -- \emph{Transform}, która przyjmuje jako parametr nazwê pliku z danymi klienta, które powinny byæ przetworzone. Dodatkowo, podczas tworzenia komponentu za pomoc¹ metody \emph{CreateIt}, podajemy nazwê pliku mapowania danych. Struktura tego pliku zostanie omówiona w dalszej czêœci sekcji. Po utworzeniu komponentu jest tworzona instancja klasy, która przechowuje dane z pliku mapowania danych -- \emph{DataMapping}. Instancja ta mo¿e byæ stworzona tylko i wy³¹cznie podczas tworzenia komponentu \emph{Data Transformator} i jednoczeœnie oznacza specjalizacjê komponentu transformacji dla konkretnego przypadku mapowania danych.
+
+W czasie wykonywania metody \emph{Transform} mo¿e zostaæ rzucony wyj¹tek typu \emph{DataTransformationException} gdy pojawi siê jakakolwiek b³¹d. Gdy wszystko zostanie wykonane poprawnie, w katalogu aplikacji wykorzystuj¹cej komponent zostanie utworzony plik z przetworzonymi danymi. Nazwa tego pliku zostanie zwrócona przez metodê \emph{Transform} po udanym zakoñczeniu operacji.
+
+\subsubsection*{Konfiguracja mapowania danych}
+
+Sercem ca³ej operacji transformowania danych jest plik konfiguracyjny. Tak jak mo¿na zobaczyæ w przyk³adzie~\ref{ex:plikKonfiguracyjnyMapowanieDanych}, konfiguracja sk³ada siê z 4 w³aœciwoœci -- atrybuty (\emph{Attributes}), rodzaj operacji dla pustych danych (\emph{TransformingEmptyValuesMode}), kategoria (\emph{Category}) oraz ogranicznik (\emph{Delimiter}). Atrybuty, jak sama nazwa wskazuje, s¹ opisem poszczególnych wartoœci obiektu dla okreœlonej domeny problemu. Kolejnoœæ atrybutów okreœla kolejnoœæ wartoœci atrybutów w pliku danych. Dodatkowo, w kategorii ustalamy, który z wymienionych atrybutów jest atrybutem kategorii. Ma to znacz¹cy wp³yw na wynikowy plik z danymi, poniewa¿ atrybut kategorii i wszystkie jego wartoœci jest przenoszony do ostatniej kolumny -- wzglêdy optymalizacyjne. Pozosta³y nam dwa atrybuty. Ogranicznik definiuje, jakim znakiem (lub zbiorem znaków) rozgraniczone s¹ kolejne wartoœci atrybutów obiektu. Ostatni¹ w³asnoœci¹ jest wybór operacji dla pustych danych. Mamy dwie mo¿liwoœci - usuwanie niepe³nych danych lub przypisywanie wiêkszoœciowej wartoœci atrybutu (kolejno - \emph{Remove, MostNumerous}).
+
+\begin{sample}
+\label{ex:plikKonfiguracyjnyMapowanieDanych}
+Przyk³adowy plik konfiguracyjny dla danych z tabeli~\ref{tab:zbiorTrenujacyPogoda}:
+\begin{lstlisting}[language=Xml]
+<?xml version="1.0"?>
+<DataMapping>
+  <Attributes>
+    <string>Aura</string>
+    <string>Temperatura</string>
+    <string>Wilgotnoœæ</string>
+    <string>Wiatr</string>
+    <string>GramyWTenis</string>
+  </Attributes>
+  <TransformingEmptyValuesMode>
+		Remove
+  </TransformingEmptyValuesMode>
+  <Category>GramyWTenis</Category>
+  <Delimiter>;</Delimiter>
+</DataMapping>
+\end{lstlisting}
+\end{sample}
+
+Tak przygotowana konfiguracja przechodzi walidacjê podczas tworzenia komponentu s³u¿¹cego do transformacji danych. Gdy wszystko idzie dobrze, dane z konfiguracji s¹ wykorzystywane do przetworzenia pliku danych specyficznych dla systemu i utworzenia finalnego pliku z danymi. Utworzone dane bêd¹ u¿yte w procesie generowania drzewa, co zostanie omówione w dalszej czêœci rozdzia³u.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Data Loader}
+
+Komponent ten odpowiedzialny jest za wczytanie przygotowanego przez administratora systemu zbioru danych. Dodatkowo jego zadaniem jest przetworzenie zbioru danych z formatu specyficznego dla zewnêtrznego systemu do postaci akceptowalnej przez omawiany komponent. Odbywa siê to za pomoc¹ komponentu transformacji danych opisywanego powy¿ej~\ref{sec:dataTransformator}. 
+
+Pocz¹tkowo wykorzystuj¹c œcie¿kê do pliku z danymi komponent ten tworzy instancjê klasy~\emph{EntityData}. Instancja ta zawiera opis atrybutów oraz zbiór danych gotowy do dalszego przetworzenia. Pojedynczy obiekt jest definiowany jako obiekt klasy~\emph{DataRow}, czyli jako zbiór wartoœci atrybutów. Po wczytaniu z pliku danych, komponent~\emph{IDataLoader} wykorzystuje agregowan¹ instancjê klasy~\emph{IEntityDataValidator}, aby sprawdziæ poprawnoœæ wczytanych danych. Walidator zwraca obiekt klasy~\emph{Outcome}, który zawiera proste metody s³u¿¹ce do sprawdzenia, czy operacja siê powiod³a. Dodatkowo mo¿emy odczytaæ wiadomoœæ powi¹zan¹ z b³êdem, jeœli taki wyst¹pi³. Opisywane elementy mo¿na zobaczyæ na diagramie klas~\ref{rys:dataLoaderClass}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{DataLoaderClassDiagram.png}}
+    \caption{Diagram klas - komponent wczytuj¹cy dane}
+    \label{rys:dataLoaderClass}
+    \end{center}
+\end{figure}
+
+W tym momencie, kiedy nasz komponent ma opakowane dane, nastêpuje ich przetwarzanie do instancji klasy implementuj¹cej interfejs~\emph{IDomainTree}. Instancja ta bêdzie g³ówn¹ struktur¹ danych (drzewem), na której bêdzie operowa³ nasz algorytm drzew decyzyjnych i zostanie omówiona dok³adnie w dalszej czêœci. Kolejnymi etapami bêdzie generowanie drzewa oraz, w póŸniejszym czasie, klasyfikacja obiektów.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Domain Tree}
+
+Pocz¹tkowa postaæ tej struktury jest tworzona przez wy¿ej omawiany komponent -- \emph{DataLoader}. W pierwszej fazie struktura ta zawiera zbiór atrybutów oraz opis domeny. Opis domeny zawiera zbiór mo¿liwych wartoœci wszystkich atrybutów, w postaci kolekcji wartoœci dla ka¿dego atrybutu. Pozwala nam to na pewn¹ optymalizacje -- operacje porównywania w algorytmie drzew decyzyjnych bêd¹ wykonywany na liczbach ca³kowitych zamiast na zmiennych znakowych. Pomys³ reprezentacji symbolicznej zosta³ zaczerpniêty z artyku³u dostêpnego w sieci~\cite{JavaIllustrations}. Dodatkowo do naszej dyspozycji pozostaje metoda~\emph{GetAllSymbolicValuesOfAttribute}. Metodzie tej podajemy symboliczne reprezentacje obiektów ze zbioru danych. W rezultacie pytamy j¹ o okreœlony symboliczny zbiór wszystkich wartoœci znajduj¹cych siê w podanym zbiorze danych dla konkretnego atrybutu, podaj¹c jego indeks. Diagram klas dla omawianej struktury mo¿na zobaczyæ poni¿ej~\ref{rys:dataTreeClass}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{DomainTreeClassDiagram.png}}
+    \caption{Diagram klas - podstawowa struktura algorytmu}
+    \label{rys:dataTreeClass}
+    \end{center}
+\end{figure}
+
+W czêœci omawiaj¹cej dzia³anie algorytmu drzew decyzyjnych zostanie omówiony proces generowania drzewa. Proces ten zaczyna siê od utworzenia korzenia, czyli instancji klasy implementuj¹cej interfejs~\emph{ITreeNode} reprezentuj¹cej korzeñ drzewa. Podczas pracy z struktur¹~\emph{IDomainTree} bêdziemy operowaæ na danych symbolicznych i wykorzystywaæ implementacjê interfejsu~\emph{ISymbolicDomainDataParams}. Instancje tego interfejsu zawieraæ bêd¹ pewien zbiór przyk³adów reprezentowany w postaci symbolicznej oraz identyfikator atrybutu domeny. 
+
+W tym momencie mamy przedstawione wszystkie potrzebne informacje, aby przejœæ do omówienia implementacji algorytmu drzew decyzyjnych. W naszym wypadku implementacja ta bazuje na podstawowym algorytmie ID3~\cite{Quin86}, w pewien sposób go rozszerzaj¹c.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Decision Tree Algorithm}
+\label{sec:decisionTreeAlgorithm}
+
+Omówienie algorytmu drzew decyzyjnych zaczniemy od opisu klasy pomocniczej~\emph{Entropy}. Klasa ta opakowuje nam obliczenia zwi¹zane z wyznaczeniem entropii~\ref{eq:entropy}, zysku informacyjnego~\ref{eq:gainInformation} oraz ilorazu zysku informacyjnego~\ref{eq:gainRatio}, które jak wiemy z rozwa¿añ z rozdzia³u~\ref{cha:uczenieMaszynowe} s¹ nam niezbêdne. Diagram klasy~\emph{Entropy} znajduje siê na rysunku~\ref{rys:entropyClass}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{EntropyClassDiagram.png}}
+    \caption{Diagram klas - klasa opakowuj¹ca obliczenia zwi¹zane z wyznaczeniem entropii, zysku informacyjnego i ilorazu zysku informacyjnego}
+    \label{rys:entropyClass}
+    \end{center}
+\end{figure}
+
+Do dyspozycji mamy trzy metody:
+\begin{itemize}
+\item \textbf{CalculateEntropy} pozwala nam na wyliczenie entropii zgodnie ze wzorem~\ref{eq:entropy}, na podstawie zbioru przyk³adów w postaci symbolicznej oraz liczby atrybutów.
+\item \textbf{CalculateGain} pozwala nam na wyliczenie zysku informacyjnego zgodnie ze wzorem~\ref{eq:gainInformation}. Do wyznaczenia wyniku metoda u¿ywa wyliczonych wczeœniej entropii dla poszczególnych atrybutów oraz entropii aktualnie analizowanego wêz³a.
+\item \textbf{CalculateGainRatio} pozwala nam na wyliczenie ilorazu zysku informacyjnego zgodnie ze wzorem~\ref{eq:gainRatio}.
+\end{itemize}
+
+Mo¿emy teraz przejœæ do omówienia w³asnoœci klasy~\emph{ID3Algorithm}, bêd¹cej implementacj¹ interfejsu~\emph{IDecisionTreeAlgorithm}. Klasa ta implementuje rozszerzony algorytm ID3. Jej diagram klas znajduje siê na rysunku~\ref{rys:decisionTreeAlgorithmClass}. Jak widzimy na diagramie, algorytm wykorzystuje klasê~\emph{Entropy} do obliczania potrzebnych wartoœci. Dodatkowo, wykorzystuje struktury~\emph{IDomainTree} oraz~\emph{ITreeNode} do generowania drzewa i w póŸniejszym czasie, do klasyfikowania przyk³adów. 
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{DecisionTreeAlgorithmClassDiagram.png}}
+    \caption{Diagram klas - algorytm tworzenia drzewa decyzyjnego i jego wykorzystania}
+    \label{rys:decisionTreeAlgorithmClass}
+    \end{center}
+\end{figure}
+
+Operacje budowania drzewa i klasyfikacji przyk³adów zostan¹ opisane dok³adnie poni¿ej. Warto zwróciæ uwagê na rozszerzenie zastosowane w algorytmie -- kompozycjê obiektu implementuj¹cego interfejs~\emph{IDecisionTreeChoiceStrategy}. Element ten zosta³ zaprojektowany, aby w przypadkach gdy podczas klasyfikacji zostanie wybranych kilka pasuj¹cych kategorii, klient algorytmu móg³ dokonaæ w sposób preferowany przez siebie wyboru poprzez podpiêcie swojej implementacji interfejsu~\emph{IDecisionTreeChoiceStrategy}. Domyœlna implementacja zwraca pierwsz¹ kategoriê jako tê w³aœciw¹. Kolejn¹ rzecz¹, o której warto wspomnieæ jest mo¿liwe uruchamianie algorytmu w dwóch trybach. Zoptymalizowany tryb (flaga \emph{optimized} przy tworzeniu algorytmu ustawiona na \emph{true}) polega na wyznaczaniu wspó³czynnika trafnoœci wyboru atrybutu na podstawie zysku informacyjnego~\ref{eq:gainInformation}. Wersja niezoptymalizowana, bêd¹ca jednoczeœnie rozszerzon¹ wersj¹ algorytmu, bazuje na obliczeniu ilorazu zysku informacyjnego ze wzoru~\ref{eq:gainRatio}. Tryb ten jest w³¹czany poprzez ustawienie flagi~\emph{optimized} na wartoœæ~\emph{false}. W czêœci opisuj¹cej przyk³ady poka¿emy ró¿nice miêdzy dzia³aniem obu trybów.
+
+\subsubsection*{Budowanie drzewa}
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{lstlisting}[caption={Algorytm tworzenia drzewa decyzyjnego}, language=Java, frame = trBL, mathescape=true, label={lst:budujDrzewoID3}]
+void budujDrzewo(ITreeNode korzen)
+{
+	idKategori = wyznaczIdKategorii();
+	liczbaKategorii = wyznaczLiczbeKategorii();
+
+	korzen.Entropy = Entropy.CalculateEntropy(...);
+
+	if (entropiaRownaZero()) return;
+
+	idNajlepszegoAtrybutu = wyznaczNajkorzystniejszyAtrybut(...);
+
+	if (najlepszyAtrybutNieZostalWyznaczony()) return;
+
+	liczbaWartosciNajlepszegoAtrybutu 
+		= wyznaczLiczbeWartosciNajlepszegoAtrybutu(...);
+
+	korzen.TestAttribute = idNajlepszegoAtrybutu;
+	korzen.Children 
+		= new TreeNode[liczbaWartosciNajlepszegoAtrybutu];
+
+	for (id = 0; id < liczbaWartosciNajlepszegoAtrybutu; id++)
+		przypiszNowyWezel(korzen, idNajlepszegoAtrybutu, id);
+
+	foreach (var treeNode in korzen.Children)
+		budujDrzewo(treeNode);
+}
+\end{lstlisting}
+
+Powy¿ej zosta³ zamieszczony pseudokod operacji buduj drzewo~\ref{lst:budujDrzewoID3}. W zasadzie, wnikliwsza analiza nale¿y siê dwóm metod¹: metodzie \emph{wyznaczNajkorzystniejszyAtrybut(...)} oraz metodzie~\emph{przypiszNowyWezel(...)}. Sam algorytm bazuje na wczeœniej zamieszczonym algorytmie podstawowym~\ref{lst:budujDrzewo}. Metoda~\emph{przypiszNowyWezel(...)} tworzy now¹ instancjê klasy implementuj¹cej interfejs~\emph{ITreeNode}, nastêpnie dodaje j¹ do dzieci aktualnie przetwarzanego wêz³a oraz przypisuje go jako rodzica oraz wyznacza podzbiór danych dla testowanego atrybutu, które s¹ z nim zgodne.
+
+Operacja~\emph{wyznaczNajkorzystniejszyAtrybut(...)} wymaga wiêkszej uwagi. Poni¿ej znajduje siê pseudokod operacji~\ref{lst:wyznaczNajlepszyAtrybut}. Jak mo¿na zaobserwowaæ w pseudokodzie, dla ka¿dego atrybutu jest wyliczana wartoœæ entropii. Nastêpnie za pomoc¹ metody~\emph{CalculateGainFactor} wyliczany jest wskaŸnik zysku informacyjnego. W zale¿noœci od ustawienia wy¿ej wspominanej w³asnoœci algorytmu~\emph{optimized}, jeœli algorytm jest u¿yty w wersji zoptymalizowanej, wyliczany jest ze wzoru~\ref{eq:gainInformation}, a w przeciwnym wypadku wyliczany jest iloraz ze wzoru~\ref{eq:gainRatio}. Jeœli wspó³czynnik jest wy¿szy od poprzednich, wartoœæ symboliczna atrybutu jest przechowywana jako najlepszy wybór testu dla aktualnie analizowanego wêz³a.
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{lstlisting}[caption={Operacja wyznaczenia najlepszego atrybutu do testu w wêŸle}, language=Java, frame = trBL, mathescape=true, label={lst:wyznaczNajlepszyAtrybut}]
+int wyznaczLiczbeWartosciNajlepszegoAtrybutu(
+	ITreeNode korzen, int liczbaKategorii, int idKategorii)
+{
+	for (idAtrybutu = 0; idAtrybutu < idKategorii; idAtrybutu++)
+	{
+		if (czyAtrybutBylJuzSprawdzany(idAtrybutu)) 
+			continue;
+
+		listaEntropii = stworzNowaListeEntropii();
+		rozmiaryPodzbiorowElementowWezla = stworzNowaListe();
+
+		liczbaWartosciAtrybutu = wyznaczLiczbeWartosci(idAtrybutu);
+
+		for (wartoscSymboliczna = 0; 
+			wartoscSymboliczna < liczbaWartosciAtrybutu; 
+			wartoscSymboliczna++)
+		{
+			podzbiorElementow = 
+				wezPodzbiorElementowPosiadajacychWartosc(wartoscSymboliczna);
+			rozmiaryPodzbiorowElementowWezla.Add(podzbiorElementow.Count);
+
+			if (podzbiorElementow.Count == 0) 
+				continue;
+
+			entropia = Entropy.CalculateEntropy(...);
+			listaEntropii.Add(entropia);
+		}
+
+		wspolczynnikZyskuInformacyjnego = CalculateGainFactor(...);
+
+		if (wspolczynnikZyskuInformacyjnego <= najlepszyWspolczynnik) 
+			continue;
+
+		najlepszyWspolczynnik = wspolczynnikZyskuInformacyjnego;
+		najlepszyAtrybut = idAtrybutu;
+	}
+
+	return najlepszyAtrybut;
+}
+\end{lstlisting}
+
+\subsubsection*{Klasyfikacja przyk³adów}
+
+Klasyfikacja przyk³adów jest mo¿liwa po wczeœniejszym wygenerowaniu drzewa decyzyjnego. Wystarczy wywo³aæ operacjê~\emph{Classify} i jako argument podaæ listê wartoœci atrybutów obiektu w odpowiedniej kolejnoœci. Operacja ta przeszuka drzewo porównuj¹c wartoœci atrybutów i wyznaczy kilka lub jedn¹ dopasowan¹ kategoriê (w naszej, podstawowej implementacji algorytm zawsze zwraca jedn¹ kategoriê). Ostatecznie za pomoc¹ instancji klasy implementuj¹cej interfejs~\emph{IDecisionTreeChoiceStrategy} wyliczane jest, która kategoria jest t¹ w³aœciw¹.
+
+Na tym koñczy siê przedstawienie warstwy przystosowania danych i implementacji algorytmu. W dalszej czêœci poka¿emy przyk³ady zastosowania poszczególnych komponentu, a na koñcu dokonamy podsumowania analizy przeprowadzonej w tym rozdziale.
+
+%---------------------------------------------------------------------------
+
+\section{Przyk³ady wykorzystania algorytmu i warstwy przystosowania danych}
+\label{sec:przykladyWykorzystaniaAlgorytmuIWarstwyPrzystosowaniaDanych}
+
+W rozdziale tym skupimy siê na przedstawieniu komponentów omawianych powy¿ej w dzia³aniu. Tak jak temat rozdzia³u sugeruje, nasze rozwa¿ania podzielimy na dwie czêœci: przyk³ady dla warstwy przystosowania danych oraz przyk³ady dla dzia³ania samego algorytmu.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Warstwa przystosowania danych}
+
+\subsubsection*{Data Transformator}
+
+Pierwszym naszym przyk³adem bêdzie transformacja danych do postaci zgodnej z naszym algorytmem. Dane zamieszczone poni¿ej~\ref{prz:daneDoTransofrmacji} zosta³y wziête z ksi¹¿ki Toma Mitchella~\cite{Mit97}. Dotycz¹ one stanu pogody i podjêcia decyzji, czy gramy w tenisa czy nie. Dane sk³adaj¹ siê z piêciu atrybutów: aura, temperatura, wilgotnoœæ, wiatr i atrybut kategorii okreœlaj¹cy nasz¹ decyzjê, czy gramy w tenisa.
+
+\begin{sample}
+\label{prz:daneDoTransofrmacji}
+Przyk³adowy zbiór danych - dane opisuj¹ce decyzjê czy gramy w tenisa, uzale¿nion¹ od stanu pogody~\cite{Mit97}.
+
+\begin{lstlisting}
+No;sunny;Hot;High;Weak
+No;sunny;Hot;High;Strong
+Yes;Overcast;Hot;High;Weak
+Yes;Rain;Mild;High;Weak
+Yes;Rain;Cool;Normal;Weak
+\end{lstlisting}
+\end{sample}
+
+Programista lub architekt odpowiedzialny za integracje systemu zewnêtrznego z algorytmem tworzy plik mapowania danych. Dla przyk³adu danych~\ref{prz:daneDoTransofrmacji}, plik mapowania danych przedstawiony jest poni¿ej~\ref{ex:plikKonfiguracjiDanychDlaPogoda}. W pliku tym definiujemy listê atrybutów opisuj¹ce nasze dane~\ref{prz:daneDoTransofrmacji}. Opisujemy jak nale¿y postêpowaæ z niepe³nymi danymi (usuwanie przyk³adów), a nastêpnie okreœlamy który z atrybutów jest atrybutem kategorii (PlayTennis). Na koniec, definiujemy ogranicznik danych (wartoœci atrybutów), w tym przypadku bêdzie to œrednik.
+
+\begin{sample}
+\label{ex:plikKonfiguracjiDanychDlaPogoda}
+Przyk³ad opisuje konfiguracje mapowania danych dla zbioru danych~\ref{prz:daneDoTransofrmacji}.
+
+\begin{lstlisting}[language=Xml]
+<?xml version="1.0"?>
+<DataMapping>
+  <Attributes>
+    <string>PlayTennis</string>
+    <string>Outlook</string>
+    <string>Temperature</string>
+    <string>Humidity</string>
+    <string>Wind</string>
+  </Attributes>
+  <TransformingEmptyValuesMode>Remove</TransformingEmptyValuesMode>
+  <Category>PlayTennis</Category>
+  <Delimiter>;</Delimiter>
+</DataMapping>
+\end{lstlisting}
+\end{sample}
+
+Dla tak przygotowanych danych mo¿emy u¿yæ programu~\emph{Agh.DecisionTree.DataTransformator.exe} przygotowanego wraz z prac¹. Program ten wykorzystuje wczeœniej omawiany komponent transformacji danych~\ref{sec:dataTransformator}. Wywo³ujemy go z konsoli systemowej podaj¹c mu dwa argumenty: œcie¿kê pliku z danymi do transformacji oraz œcie¿kê do pliku mapowania danych. W naszym wypadku, kiedy oba pliki~\ref{ex:plikKonfiguracjiDanychDlaPogoda} oraz \ref{prz:daneDoTransofrmacji} znajduj¹ siê w tym samym katalogu, wywo³anie wygl¹da nastêpuj¹co: \emph{Agh.DecisionTree.DataTransformatorAgh.DecisionTree.DataTransformator.exe data.txt dataMapping.xml}. W wyniku wywo³ania programu otrzymujemy nastêpuj¹cy wynik:
+
+\begin{sample}
+\label{ex:danePrzetworzone}
+Przetworzone dane~\ref{prz:daneDoTransofrmacji} z u¿yciem konfiguracji mapowania danych~\ref{ex:plikKonfiguracjiDanychDlaPogoda}.
+
+\begin{lstlisting}[language=Xml]
+<?xml version="1.0"?>
+<EntityData>
+  <Attributes>
+    <string>Wind</string>
+    <string>Outlook</string>
+    <string>Temperature</string>
+    <string>Humidity</string>
+    <string>PlayTennis</string>
+  </Attributes>
+  <Data>
+    <DataRow>
+      <Values>
+        <string>Weak</string>
+        <string>sunny</string>
+        <string>Hot</string>
+        <string>High</string>
+        <string>No</string>
+      </Values>
+    </DataRow>
+    <DataRow>
+      <Values>
+        <string>Strong</string>
+        <string>sunny</string>
+        <string>Hot</string>
+        <string>High</string>
+        <string>No</string>
+      </Values>
+    </DataRow>
+    <DataRow>
+      <Values>
+        <string>Weak</string>
+        <string>Overcast</string>
+        <string>Hot</string>
+        <string>High</string>
+        <string>Yes</string>
+      </Values>
+    </DataRow>
+    <DataRow>
+      <Values>
+        <string>Weak</string>
+        <string>Rain</string>
+        <string>Mild</string>
+        <string>High</string>
+        <string>Yes</string>
+      </Values>
+    </DataRow>
+    <DataRow>
+      <Values>
+        <string>Weak</string>
+        <string>Rain</string>
+        <string>Cool</string>
+        <string>Normal</string>
+        <string>Yes</string>
+      </Values>
+    </DataRow>    
+  </Data>
+</EntityData>
+\end{lstlisting}
+\end{sample}
+
+W pliku wynikowym~\ref{ex:danePrzetworzone} widzimy, ¿e zamieszczone zosta³y atrybuty w zmienionej kolejnoœci w taki sposób, aby atrybut kategorii znalaz³ siê na ostatnim miejscu. Równie¿ dla ka¿dego przyk³adu wartoœci atrybutów znalaz³y siê w odpowiedniej kolejnoœci. Wygenerowany plik jest kompletnym i wystarczaj¹cym opisem zestawu danych, który w ³atwy sposób mo¿na wczytaæ do instancji klasy~\emph{EntityData}, u¿ywanej podczas ³adowania danych i tworzenia instancji klasy implementuj¹cej interfejs~\emph{IDomainTree}.
+
+Uwa¿ny czytelnik zauwa¿y, ¿e sposób ten ma pewne ograniczenia. Jesteœmy zmuszeni do przechowywania ca³ego zbioru danych w pamiêci, co mo¿e byæ dla bardzo du¿ych zbiorów danych nie do przyjêcia. Dlatego wynik transformacji mo¿e byæ przechowywany w bazie danych i odpowiednio doczytywany w razie potrzeby. Jest to pierwsze mo¿liwe rozszerzenie dla rozwi¹zania opracowywanego w pracy.
+
+\subsubsection*{Data Loader}
+
+Dzia³anie tego komponentu jest prostsze ni¿ pozosta³ych, dlatego omówimy ogólnie jego zadanie bez szczegó³owego przyk³adu. Zadaniem komponentu jest przede wszystkim wczytanie pliku utworzonego przez komponent transformuj¹cy dane~\ref{sec:dataTransformator}, a nastêpnie walidacja poprawnoœci utworzonej struktury z danymi.
+
+Po udanej weryfikacji wczytywanego pliku, tworzona jest struktura drzewa (\emph{IDomainTree}), która bêdzie wykorzystywana przy generowaniu drzewa decyzyjnego. Przepisywana jest kolekcja atrybutów, a nastêpnie definiowana jest domena problemu poprzez zdefiniowanie kolekcji atrybutów. Do ka¿dego atrybutu przypisujemy kolekcje mo¿liwych wartoœci, a indeksy poszczególnych wartoœci stanowiæ bêd¹ symboliczn¹ reprezentacje przyk³adów domeny. Przyk³ady w symbolicznej postaci zapisywane s¹ jako dane, w nowo utworzonym drzewie.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Algorytm drzew decyzyjnych}
+
+Na sam koniec, przedstawimy przyk³ady dzia³ania naszego algorytmu. Algorytm w tej czêœci pracy bêdzie uczony ma³ymi zbiorami danych przyk³adów, o niewielkiej liczbie atrybutów tak, aby pokazaæ jego przyk³adowe dzia³anie. Bardziej ¿yciowe przyk³ady zostan¹ przedstawione w rozdziale~\ref{cha:wynikiBadanEksperymentalnych}.
+
+Aby pokazaæ jak dzia³a, wykorzystamy ma³y zbiór danych zaczerpniêty ze strony internetowej~\cite{JavaIllustrations}. Przyk³ad~\ref{ex:bridgeData} reprezentuje dane powi¹zane z in¿ynieri¹ budowy mostów.
+
+\begin{sample}
+\label{ex:bridgeData}
+Plik bridges.dat
+
+\begin{lstlisting}
+Span		Shape		Slab
+//**************************************
+long		square		waffle
+long		rectangle	waffle
+short		square		two-way
+short		rectangle	one-way
+\end{lstlisting}
+\end{sample}
+
+Dla naszych danych wywo³ujemy program: \emph{Agh.DecisionTree.ID3.Program.exe bridges.dat}. W wyniku otrzymujemy nastêpuj¹ce drzewo:
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{bridgeTree.png}}
+    \caption{Drzewo decyzyjne utworzone za pomoc¹ naszego algorytmu dla pliku bridges.dat~\ref{ex:bridgeData}}
+    \label{rys:bridgeTree}
+    \end{center}
+\end{figure}
+
+Na rysunku~\ref{rys:bridgeTree} widaæ wyraŸnie, ¿e najwiêkszy zysk informacyjny jest dla atrybutu \emph{span}, który pozwala nam od razu wybraæ klasê \emph{waffle} gdy wartoœæ atrybutu wynosi~\emph{Long}. Drugim w kolejnoœci atrybutem jest atrybut~\emph{shape}, który dzieli nasze egzemplarze na dwie kategorie:~\emph{two-way} oraz~\emph{one-way}.
+
+Poni¿ej zosta³ zamieszczony fragment kodu w jêzyku C\#~\ref{ex:kodBridgeTree}, który wykorzystuje bibliotekê stworzon¹ dla celów pracy magisterskiej. Pocz¹tkowo deklarujemy referencje do implementacji algorytmu, a nastêpnie tworzymy komponent do ³adowania danych, wstrzykuj¹c mu domyœlny walidator danych. Kolejno, ³adujemy dane z pliku~\emph{bridges.xml}, który to zosta³ utworzony przez komponent transformacji danych dla pliku~\ref{ex:bridgeData}. W tym momencie mo¿emy wykorzystaæ utworzon¹ strukturê~\emph{domainTree} do wygenerowania drzewa decyzyjnego. W tym celu wykorzystujemy metodê~\emph{CreateIt} do wstrzykniêcia wspomnianej struktury danych i wywo³ujemy metodê~\emph{BuildDecisionTree}. Wygenerowane drzewo pos³u¿y nam do klasyfikacji przyk³adu, którego wartoœci atrybutów~\emph{Span}~i~\emph{Shape} to odpowiednio:~\emph{short} oraz~\emph{rectangle}. W wyniku wywo³ania metody~\emph{Classify} otrzymujemy dopasowan¹ kategoriê do testowanego obiektu, w tym przypadku jest to klasa~\emph{one-way}. Odpowiada to wy¿ej zamieszczonemu drzewu decyzyjnemu na rysunku~\ref{rys:bridgeTree}.
+
+\begin{lstlisting}[caption={Przyk³adowy kod w jêzyku C\# wykorzystuj¹cy drzewo decyzyjne}, language=Java, frame = trBL, mathescape=true, label={ex:kodBridgeTree}]
+ID3Algorithm _id3;
+
+IDataLoader loader = 
+	DataLoader.CreateIt(EntityDataValidator.CreateIt());
+
+var domainTree = loader.LoadFromFile("bridges.xml");
+
+_id3 = ID3.ID3Algorithm.CreateIt(domainTree);
+_id3.BuildDecisionTree();
+
+// short;rectangle;one-way
+
+var data = new List<string> { "short", "rectangle" };
+
+string classification = _id3.Classify(data);
+
+Assert.That(classification, Is.EqualTo("one-way"));
+
+\end{lstlisting}
+
+Innym ciekawym przyk³adem generowania drzewa decyzyjnego jest wygenerowane drzewo na podstawie pliku z danymi~\ref{ex:strategieMarketingowe}, w zale¿noœci od zastosowanego parametru~\emph{optimized}~\ref{sec:decisionTreeAlgorithm}. Odrazu widaæ, ¿e plik z danymi jest obszerniejszy od wczeœniej analizowanego~\ref{ex:bridgeData}. W tym przyk³adzie ujawnia siê niechciana cecha podstawowej wersji algorytmu ID3, o której wspominaliœmy w rozdziale~\ref{sec:realizacjaSchematuOgolnegoKryteriumStopu}. 
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{sample}
+\label{ex:strategieMarketingowe}
+Zestaw danych opisuj¹cy fikcyjne strategie marketingowe~\cite{DecisionTreesNet}.
+
+\begin{lstlisting}
+Date			District	House_Type		Income	Prev. Customer Outcome
+//*******************************************************************
+3/10/03		Suburban	Detached			High		No						Nothing
+14/9/03		Suburban	Detached			High		Responded			Nothing
+2/4/02		Rural			Detached			High		No						Responded
+18/1/03		Urban			Semi-detached	High		No						Responded
+3/4/03		Urban			Semi-detached	Low			No						Responded
+15/10/02	Urban			Semi-detached	Low			Responded			Nothing
+15/10/02	Rural			Semi-detached	Low			Responded			Responded
+2/3/01		Suburban	Terrace				High		No						Nothing
+4/5/03		Suburban	Semi-detached	Low			No						Responded
+2/1/03		Urban			Terrace			Low			No						Responded
+3/10/03		Suburban	Terrace			Low			Responded			Responded
+3/10/03		Rural			Terrace			High		Responded			Responded
+8/4/03		Rural			Detached		Low			No						Responded
+6/5/02		Urban			Terrace			High		Responded			Nothing
+\end{lstlisting}
+\end{sample}
+
+W tym przypadku, wynikowe drzewa (ze wzglêdu na ich objêtoœæ) przedstawimy za pomoc¹ regu³. Regu³y bêd¹ zbiorem kolejnych wyra¿eñ warunkowych. Poni¿sze drzewo~\ref{ex:drzewoZoptymalizowane} zosta³o wygenerowane za pomoc¹ algorytmu wykorzystuj¹cego tylko obliczenia na podstawie~\emph{zysku informacyjnego}, przez co drzewo w stosunku do drzewa nieoptymalizowanego jest d³u¿sze, jednak czas potrzebny na wygenerowanie drzewa jest stosunkowo krótszy.
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{sample}
+\label{ex:drzewoZoptymalizowane}
+Wygenerowane drzewo z parametrem~\emph{optimized} o wartoœci~\emph{true}.
+
+\begin{lstlisting}[language=Java, frame = trBL]
+if ( Date == "3/10/03") {
+	if( Previous_Customer == "No") {
+		Outcome = "Nothing";
+	} else  if( Previous_Customer == "Responded") {
+		Outcome = "Responded";
+	}
+} else if( Date == "14/9/03") {
+	Outcome = "Nothing";
+} else if( Date == "2/4/02") {
+	Outcome = "Responded";
+} else if( Date == "18/1/03") {
+	Outcome = "Responded";
+} else if( Date == "3/4/03") {
+	Outcome = "Responded";
+} else if( Date == "15/10/02") {
+	if( Previous_Customer == "No") {
+		Outcome = undefined;
+	} else  if( Previous_Customer == "Responded") {
+		if( Income == "High") {
+			Outcome = undefined;
+		} else if( Income == "Low") {
+			if( House_Type == "Detached") {
+				Outcome = undefined;
+			} else if( House_Type == "Semi-detached") {
+				if( District == "Suburban") {
+					Outcome = undefined;
+				} else if( District == "Rural") {
+					Outcome = "Responded";
+				} else if( District == "Urban") {
+					Outcome = "Nothing";
+				}
+			} else if( House_Type == "Terrace") {
+				Outcome = undefined;
+			}
+		}
+	}
+} else if( Date == "2/3/01") {
+	Outcome = "Nothing";
+} else if( Date == "4/5/03") {
+	Outcome = "Responded";
+} else if( Date == "2/1/03") {
+	Outcome = "Responded";
+} else if( Date == "8/4/03") {
+	Outcome = "Responded";
+} else if( Date == "6/5/02") {
+	Outcome = "Nothing";
+}
+\end{lstlisting}
+\end{sample}
+
+Drzewo wygenerowane z wykorzystaniem~\emph{ilorazu zysku informacyjnego} jest p³ytsze i mniejsze, przez co pozwala na lepsze dopasowywanie przyk³adów, zw³aszcza tych nie pokrywaj¹cych siê bezpoœrednio z przyk³adami ze zbioru testowego. Widzimy równie¿, ¿e promowany przez powy¿sze drzewo~\ref{ex:drzewoZoptymalizowane} atrybut~\emph{Prev. Customer} ze wzglêdu na licznoœæ wystêpowania wartoœci atrybutu, nie jest ju¿ preferowanym atrybutem w drzewie~\ref{ex:drzewoNieoptymalizowane}. Pozwoli³o to na uzyskanie lepszego drzewa, kosztem czasu generowania drzewa decyzyjnego.
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{sample}
+\label{ex:drzewoNieoptymalizowane}
+Wygenerowane drzewo z parametrem~\emph{optimized} o wartoœci~\emph{false}.
+
+\begin{lstlisting}[language=Java, frame = trBL]
+if( Date == "3/10/03") {
+	if( House_Type == "Detached") {
+		Outcome = "Nothing";
+	} else  if( House_Type == "Semi-detached") {
+		Outcome = undefined;
+	} else  if( House_Type == "Terrace") {
+		Outcome = "Responded";
+	}
+} else if( Date == "14/9/03") {
+	Outcome = "Nothing";
+} else if( Date == "2/4/02") {
+	Outcome = "Responded";
+} else if( Date == "18/1/03") {
+	Outcome = "Responded";
+} else if( Date == "3/4/03") {
+	Outcome = "Responded";
+} else if( Date == "15/10/02") {
+	if( District == "Suburban") {
+		Outcome = undefined;
+	} else  if( District == "Rural") {
+		Outcome = "Responded";
+	} else  if( District == "Urban") {
+		Outcome = "Nothing";
+	}
+} else if( Date == "2/3/01") {
+	Outcome = "Nothing";
+} else if( Date == "4/5/03") {
+	Outcome = "Responded";
+} else if( Date == "2/1/03") {
+	Outcome = "Responded";
+} else if( Date == "8/4/03") {
+	Outcome = "Responded";
+} else if( Date == "6/5/02") {
+	Outcome = "Nothing";
+}
+\end{lstlisting}
+\end{sample}
+
+%---------------------------------------------------------------------------
+
+\section{Podsumowanie}
+\label{sec:implementacjaAlgorytmuPodsumowanie}
+
+Aktualnie mamy œwiadomoœæ, jak wygl¹da implementacja algorytmu przedstawionego w teoretycznym rozdziale~\ref{cha:uczenieMaszynowe}. Wiemy z jakich komponentów sk³ada siê ca³oœæ, pozwalaj¹ca nie tylko na wygenerowanie drzewa decyzyjnego i klasyfikacje przyk³adów, ale równie¿ warstwa przetwarzania danych. W³aœciwie to od tej warstwy zale¿y praktyczna u¿ytecznoœæ implementacji konkretnego algorytmu. Gdy jesteœmy w stanie dowolne specyficzne dane wykorzystaæ w istniej¹cym algorytmie, wówczas mo¿emy czerpaæ wszelakie korzyœci id¹ce z zastosowanym algorytmem.
+
+Wprowadzone rozszerzenie algorytmu, pozwalaj¹ce na definiowanie strategii, gdy algorytm zwróci nam wiele odpowiadaj¹cych kategorii, w doskona³y sposób wpasowuje siê w problem rozwa¿any w pracy. Za³ó¿my, ¿e zadanie zosta³o dopasowane do kilku pracowników. Najprostszym kryterium wyboru tak ograniczonego zbioru ze wszystkich pracowników mo¿e byæ ich obci¹¿enie. Zatem bezpoœrednio jesteœmy w stanie poprzez to rozszerzenie wp³ywaæ na dane wynikowe, co równie¿ ma ogromne znaczenie na u¿ytecznoœæ algorytmu uczenia maszynowego.
+
+W nastêpnym rozdziale zostanie przedstawiona platforma do zarz¹dzania zadaniami stworzona na cele pracy. Dopiero kolejny rozdzia³, czyli po³¹czenie implementacji algorytmu oraz stworzonej platformy poka¿e nam prawdziw¹ si³ê algorytmów uczenia maszynowego. Na przypadkach zbli¿onych do realnych problemów przeœledzimy zalety wykorzystania metod uczenia maszynowego. Dodatkowo zwrócimy uwagê na problemy powi¹zane z integracj¹ takiego algorytmu z istniej¹cym systemem.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

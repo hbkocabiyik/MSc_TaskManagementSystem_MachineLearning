@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Agh.DecisionTree.Data.Transformation.DataTransformator">
+    <Position X="0.5" Y="0.5" Width="2.25" />
+    <Members>
+      <Method Name="DataTransformator" Hidden="true" />
+      <Method Name="EvalInputFrom" Hidden="true" />
+      <Method Name="ReverseElementsOf" Hidden="true" />
+      <Method Name="SetCategoryAsALastAttribute" Hidden="true" />
+      <Method Name="SplitInput" Hidden="true" />
+    </Members>
+    <AssociationLine Name="_dataMapping" Type="Agh.DecisionTree.Data.Mapping.DataMapping">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.464" Y="0.05" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAACAAAAAAAAEEQAAAAABAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Transformation\DataTransformator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dataMapping" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Agh.DecisionTree.Data.Mapping.DataMapping">
+    <Position X="4.75" Y="0.5" Width="2.5" />
+    <Members>
+      <Field Name="_delimiter" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAkAAAAAAAAAAAgABAAAAQAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Mapping\DataMapping.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="TransformingEmptyValuesMode" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="Agh.DecisionTree.Data.Transformation.IDataTransformator">
+    <Position X="0.5" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Transformation\IDataTransformator.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Agh.DecisionTree.Data.Mapping.TransformingEmptyValuesMode">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Mapping\DataMapping.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

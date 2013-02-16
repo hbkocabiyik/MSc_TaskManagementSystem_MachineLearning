@@ -1,0 +1,11 @@
+﻿<?xml version="1.0"?>
+<DataMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Attributes>
+    <string>Slab</string>
+    <string>Shape</string>
+    <string>Span</string>
+  </Attributes>
+  <TransformingEmptyValuesMode>Remove</TransformingEmptyValuesMode>
+  <Category>Slab</Category>
+  <Delimiter>;</Delimiter>
+</DataMapping>

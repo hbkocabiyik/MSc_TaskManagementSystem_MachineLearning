@@ -1,0 +1,73 @@
+﻿@model IEnumerable<TaskManagement.Web.Models.Task>
+@using TaskManagement.Web.Helpers
+
+@{
+    ViewBag.Title = "Task List";
+}
+
+<h2>Task List</h2>
+
+<table>
+    <tr>
+        <th></th>
+        <th>
+            Status
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Estimation
+        </th>
+        <th>
+            Completed
+        </th>
+        <th>
+            Remaining
+        </th>
+        <th>
+            Priority
+        </th>
+        <th>
+            Area
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID })
+        </td>
+        <td>
+            @Html.GetStatus(item.Status)
+        </td>
+        <td>
+            @item.Name
+        </td>
+        <td>
+            @Html.Truncate(item.Description)
+        </td>
+        <td>
+            @String.Format("{0:F}", item.EstimatedTime)
+        </td>
+        <td>
+            @String.Format("{0:F}", item.SpentTime)
+        </td>
+        <td>
+            @String.Format("{0:F}", item.RemainingTime)
+        </td>
+        <td>
+            @Html.GetPriority(item.Priority)
+        </td>
+        <td>
+            @item.Area.Name
+        </td>
+    </tr>
+}
+
+</table>
+

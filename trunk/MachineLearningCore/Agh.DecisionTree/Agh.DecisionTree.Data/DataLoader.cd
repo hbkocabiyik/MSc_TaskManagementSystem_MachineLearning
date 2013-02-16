@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Agh.DecisionTree.ID3.Loading.DataLoader">
+    <Position X="0.5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAACAAAAAAQAAAAAAAAAAAAAAAEAAAAAIAA=</HashCode>
+      <FileName>Loading\DataLoader.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_validator" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Agh.DecisionTree.ID3.Loading.EntityDataValidator">
+    <Position X="7.25" Y="3" Width="4.75" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Agh.DecisionTree.ID3.Algorithm.DomainDataSet">
+    <Position X="8" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAAACAAABAAAAAQAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Algorithm\DomainDataSet.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Agh.DecisionTree.Data.Loading.IDataLoader">
+    <Position X="4.25" Y="0.75" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Agh.DecisionTree.ID3.Loading.IEntityDataValidator">
+    <Position X="3.25" Y="3" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Agh.DecisionTree.ID3.Algorithm.IDomainDataSet">
+    <Position X="5.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

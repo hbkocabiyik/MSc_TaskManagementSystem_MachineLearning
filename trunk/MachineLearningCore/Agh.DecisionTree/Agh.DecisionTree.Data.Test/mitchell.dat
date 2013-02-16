@@ -1,0 +1,16 @@
+Outlook		Temperature	Humidity	Wind	PlayTennis
+sunny		Hot		High		Weak	No
+sunny		Hot		High		Strong	No
+Overcast 	Hot		High		Weak	Yes
+Rain		Mild		High		Weak	Yes
+Rain		Cool		Normal		Weak	Yes
+Rain		Cool		Normal		Strong	No
+Overcast 	Cool		Normal		Strong	Yes
+sunny		Mild		High		Weak	No
+sunny		Cool		Normal		Weak	Yes
+Rain		Mild		Normal		Weak	Yes
+sunny	Mild		Normal		Strong	Yes
+Overcast	Mild		High		Strong	Yes
+Overcast	Hot		Normal		Weak	Yes
+Rain		Mild		High		Strong	No
+

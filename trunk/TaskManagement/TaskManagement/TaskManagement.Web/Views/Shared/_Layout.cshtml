@@ -1,0 +1,47 @@
+﻿@using TaskManagement.Web.Helpers
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/jquery-1.4.4.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/TaskManagement.Scripts.js")" type="text/javascript"></script>
+</head>
+
+<body>
+    <div class="page">
+
+        <div id="header">
+            <div id="title">
+                <h1>TASK MANAGEMENT STUDIO</h1>
+            </div>
+
+            <div id="logindisplay">
+                @Html.Partial("_LogOnPartial")
+            </div>
+
+            <div id="menucontainer">
+
+                <ul id="menu">
+                    @Html.ActionLinkForAnonymousUser()
+                    @Html.ActionLinkWithEngineerRole("Task List", "TaskList", "Engineer", "")
+                    @Html.ActionLinkWithManagerRole(linkText: "Task List", actionName: "Index", controllerName: "Tasks")
+                    @Html.ActionLinkWithManagerRole("Areas", "Index", "Area")
+                    @Html.ActionLinkWithManagerRole("Skills", "Index", "Skill")
+                    @Html.ActionLinkWithManagerRole(linkText: "Engineers", actionName: "Index", controllerName: "Employees")
+                    @Html.ActionLinkWithManagerOrEngineerRole("Account Settings", "Index", "AccountSettings", "")
+                    @Html.ActionLinkWithAdministratorRole("Administrator", "Index", "Administrator", "")
+                </ul>
+            </div>
+        </div>
+
+        <div id="main">
+            @RenderBody()
+            <div id="footer">
+                built with <a href="http://asp.net/mvc">ASP.NET MVC 3</a>
+            </div>
+        </div>
+    </div>    
+</body>
+</html>

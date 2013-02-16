@@ -1,0 +1,331 @@
+\chapter{System zarz¹dzania zadaniami}
+\label{cha:systemZarzadzaniaZadaniami}
+
+W czwartym rozdziale skupimy siê na przedstawieniu platformy s³u¿¹cej do zarz¹dzania zadaniami na przyk³adzie firmy informatycznej. Opiszemy system i jego funkcje, wraz z podzia³em na role. Na koniec opisane zostan¹ dane przygotowane dla celów pracy, które zostan¹ wykorzystane w badaniach i analizach w rozdziale~\ref{cha:wynikiBadanEksperymentalnych}. 
+Rozdzia³~\ref{cha:wynikiBadanEksperymentalnych} wykorzystuje po³¹czenie systemu zarz¹dzania zadaniami i algorytmu drzew decyzyjnych. Po³¹czenie to jest przedstawione pod koniec tego rozdzia³u.
+
+%---------------------------------------------------------------------------
+
+\section{Opis systemu}
+\label{sec:opisSystemu}
+
+System zarz¹dzania zadaniami, jak sama nazwa wskazuje, ma na celu umo¿liwiæ definiowanie zadañ, ich zarz¹dzanie poprzez przypisywanie do konkretnych osób i raportowanie czasu, stanu realizacji zadañ przez osoby wykonuj¹ce. Te dwa zadania s¹ przypisane kolejno do roli menad¿era oraz do roli pracownika (w tym przypadku, programisty). Dodatkowo w systemie znajduje siê rola administratora, który pozwala na definiowanie nowych pracowników i innych rzeczy administracyjnych potrzebnych do pracy dwóm wczeœniej wymienionym rol¹.
+
+System zosta³ napisany przy u¿yciu jêzyka C\#\cite{CSharpWiki}. Jako technologiê pozwalaj¹c¹ utworzyæ platformê internetow¹ zosta³a u¿yta technologia ASP.NET MVC 3~\cite{AspNetMvc}. Do integracji z baz¹ danych wykorzystaliœmy Entity Framemework 4~\cite{EntityFramework}, a sama baza zosta³a utworzona przy pomocy serwera MS SQL Server 2008~\cite{SqlServer}. W dalszej czêœci nie bêdziemy siê odwo³ywaæ do specyficznych technologicznych niuansów powi¹zanych z wy¿ej wymienionymi technologiami. Po bardziej szczegó³owe informacje nale¿y udaæ siê do wymienionych odnoœników.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+\subsection{Model danych}
+
+W czêœci tej skupimy siê na opisie modelu danych. Obrazowo model ten przedstawiony jest na poni¿szym diagramie~\ref{rys:dbDiagram} tabel bazy danych u¿ywanej podczas pracy z systemem zarz¹dzania zadaniami.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{DbDiagram.PNG}}
+    \caption{Diagram tabel dla bazy danych systemu zarz¹dzania zadaniami}
+    \label{rys:dbDiagram}
+    \end{center}
+\end{figure}
+
+Model danych jest podzielony na 4 elementy, przy czym na diagramie mo¿na zaobserwowaæ a¿ 6 tabel. Wynika to z prostego faktu, tzn. dwie dodatkowe tabele s¹ tabelami ³¹cznikowymi wiele do wiele pozwalaj¹ce uzyskaæ nam oczekiwane powi¹zanie miêdzy konkretnymi typami danych. Dodatkowo tabela ³¹cz¹ca pracownika z umiejêtnoœci¹ (\emph{EmployeeSkills}) posiada dodatkowy parametr, okreœlaj¹cy stopieñ zaawansowania danej umiejêtnoœci (\emph{Experience}). Poni¿ej zosta³y opisane cztery podstawowe elementy modelu danych:
+\begin{itemize}
+\item \textbf{Tasks} jest tabel¹ odpowiedzialn¹ za przechowywanie zadañ. Ka¿de zadanie oprócz opisowych danych takich jak nazwa, opis, posiada przypisanego pracownika, który praktycznie rzecz bior¹c bêdzie klas¹, do której bêdziemy chcieli przypisaæ dane zadanie. Dodatkowo, do zadania przypisujemy obszar funkcjonalny (\emph{Area}). Pozosta³e parametry s¹ powi¹zane z statusem i priorytetem zadania oraz z raportowanym i estymowanym czasem zadania. Dodatkowo, zadania opisywane s¹ za pomoc¹ tabeli ³¹cznikowej~\emph{TaskSkills}, która okreœla wymagane lub wskazane umiejêtnoœci potrzebne do realizacji danego zadania.
+\item \textbf{Employees} jest tabel¹ przechowuj¹ca pracowników przypisanych do roli menad¿era lub programisty. Typ pracownika jest okreœlony za pomoc¹ parametru~\emph{Role}. Dodatkowo, tabela zawiera dane opisowe pracownika takie jak jego login, imiê i nazwisko, data zatrudnienia oraz pozycja stanowiska. Dodatkowym opisem pracowników jest tabela ³¹cznikowa~\emph{EmployeeSkills} zwieraj¹ca przypisane umiejêtnoœci i ich poziom do pracownika.
+\item \textbf{Areas} to prosta tabela zawieraj¹ca nazwê obszaru funkcjonalnego, który jest czêœci¹ ca³ej domeny interesuj¹cej dan¹ firmê. 
+\item \textbf{Skills} to kolejna prosta tabela zawieraj¹ca nazwê umiejêtnoœci powi¹zanej w pewien sposób z programowaniem (nasz konkretny przyk³ad zarz¹dzania zadaniami).
+
+\end{itemize}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+\subsection{Architektura systemu}
+
+Architektura systemu jest stosunkowo prosta. Mamy trzy warstwy, warstwê prezentacji w postaci aplikacji internetowej, do której u¿ytkownik musi siê zalogowaæ. Ciekawym faktem jest, ¿e warstwa ta ca³kowicie ró¿ni siê w zale¿noœci od roli pracownika. Menad¿er ma do dyspozycji ca³kiem inne ekrany, ni¿ te pozostaj¹ce do dyspozycji programisty czy administratora. Dodatkowym narzêdziem warstwy prezentacji u¿ywanym przez administratora, jest aplikacja internetowa do zarz¹dzania rolami na bazie danych stworzona przez firmê Microsoft.
+
+Warstwa biznesowa jest odpowiedzialna za przechwytywanie zdarzeñ warstwy prezentacji i odpowiednie przetwarzanie danych. Do jej stworzenia zosta³y u¿yte wczeœniej wspominane technologie, ASP.NET MVC jako czêœæ pozwalaj¹ca na utworzenie i integracjê warstwy prezentacji i warstwy biznesowej oraz Entity Framework jako framework pozwalaj¹cy wspó³pracowaæ z baz¹ danych.
+
+Ostatni¹ warstw¹ jest warstwa danych, która ogranicza siê do bazy danych utworzonej za pomoc¹ serwera MS Sql Server 2008. Model bazy zosta³ zaprezentowany powy¿ej na diagramie~\ref{rys:dbDiagram}.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+\subsection{Role w systemie zarz¹dzania zadaniami}
+
+Tak jak wy¿ej wspomnieliœmy, w systemie mamy wyró¿nione trzy role: menad¿er, programista (in¿ynier) oraz administrator. Administrator skupia siê na zarz¹dzaniu ca³¹ infrastruktur¹ systemu, natomiast funkcjonalnoœæ biznesowa systemu jest wykorzystywana przez menad¿era i programistê.
+
+\subsubsection*{Administrator}
+
+Poni¿ej zamieszczony jest diagram przypadków u¿ycia opisuj¹cy zadania wykonywane przez administratora~\ref{rys:administratorUseCase}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{AdministratorUseCase.png}}
+    \caption{Diagram przypadków u¿ycia dla roli Administrator}
+    \label{rys:administratorUseCase}
+    \end{center}
+\end{figure}
+
+Trzy przypadki u¿ycia s¹ wykonywane przez administratora za pomoc¹ narzêdzia~\emph{ASP.NET Web Site Administration Tool}. Opis narzêdzia wraz z odniesieniami do szczegó³owych informacji mo¿na znaleŸæ na stronie~\cite{AspNetAdministrationTool}. Wspomniane przypadki to \emph{Add New Role}, \emph{Remove Role} oraz \emph{Atach Role To User}, czyli innymi s³owy mówi¹c zarz¹dzanie rolami wystêpuj¹cymi w aplikacji. Jako ¿e aplikacja ma trzy predefiniowane role i zakres pracy nie przewiduje rozszerzania liczby ról, interesuj¹cym przypadkiem bêdzie dla nas jedynie przypisywanie roli do u¿ytkownika. Dodatkowo, dwa przypadki u¿ycia s³u¿¹ce do dodawania i usuwania u¿ytkowników aplikacji (\emph{Add New User}, \emph{Delete User}) s¹ realizowane po czêœci po stronie wymienionego narzêdzia, a po czêœci po stronie systemu do zarz¹dzania zadaniami. Dok³adniejszy opis tych przypadków u¿ycia znajduje siê poni¿ej.
+
+Przypadki u¿ycia dla roli administratora:
+\begin{itemize}
+\item \textbf{Add New Role} to jedynie dodanie litera³u definiuj¹cego rolê u¿ytkownika. Role te s¹ wykorzystywane w aplikacji do ograniczania uprawnieñ (lub ich nadawania) dla poszczególnych u¿ytkowników systemu w zale¿noœci od przypisanych do nich ról. W aplikacji mamy predefiniowane trzy role: menad¿er, administrator oraz programista (in¿ynier). W czasie pracy nie bêdziemy zmieniaæ liczby ról.
+\item \textbf{Remove Role} pozwala na usuniêcie wczeœniej dodanej roli do systemu.
+\item \textbf{Attach Role To User} przypisuje wybran¹ rolê do u¿ytkownika. U¿ytkownik po stworzeniu i dodaniu do systemu nie ma dostêpu do ¿adnych interesuj¹cych funkcjonalnoœci systemu. Dopiero po przypisaniu mu roli, funkcjonalnoœci powi¹zane z dan¹ rol¹ w systemie s¹ dla niego dostêpne.
+\item \textbf{Add New User} polega na dodaniu nowego u¿ytkownika do systemu. Jest to proces dwu stopniowy. Pierwszy polega na dodaniu u¿ytkownika za pomoc¹ narzêdzia ASP.NET Web Site Administration Tool do bazy danych. Podajemy wówczas jedynie login u¿ytkownika, mail oraz has³o. Reszta danych bêdzie tworzona w drugiej fazie, któr¹ wykonujemy w systemie zarz¹dzania zadaniami. Aby u¿ytkownik w pe³ni móg³ korzystaæ z systemu, administrator musi zalogowaæ siê do naszego systemu i tam wybraæ spoœród nowo dodanych u¿ytkowników w pierwszej fazie interesuj¹cej go osoby, a nastêpnie przypisaæ do niej pozosta³e dane. Tak utworzony u¿ytkownik jest pe³noprawnym u¿ytkownikiem systemu zarz¹dzania zadaniami.
+\item \textbf{Delete User} pozwala na usuniêcie istniej¹cego u¿ytkownika. Równie¿ jest to proces dwu stopniowy, lecz wykonujemy go w odwrotnej kolejnoœci w stosunku do powy¿szego przypadku u¿ycia.
+\item \textbf{Display All Users} pozwala zalogowanemu do systemu administratorowi wyœwietliæ informacje na temat wszystkich u¿ytkowników systemu.
+\item \textbf{Display User Details} polega na wyœwietleniu danych konkretnego u¿ytkownika systemu.
+\item \textbf{Edit User Settings} pozwala zalogowanemu do systemu administratorowi edytowaæ dane u¿ytkownika systemu.
+
+\end{itemize}
+
+\subsubsection*{Programista (in¿ynier)}
+
+Jeœli chodzi natomiast o dwie pozosta³e role, wszystkie ich przypadki u¿ycia realizowane s¹ w systemie zarz¹dzania zadaniami.
+
+Poni¿ej zamieszczony jest diagram przypadków u¿ycia opisuj¹cy zadania wykonywane przez programistê~\ref{rys:engineerUseCase}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{EngineerUseCase.png}}
+    \caption{Diagram przypadków u¿ycia dla roli Engineer}
+    \label{rys:engineerUseCase}
+    \end{center}
+\end{figure}
+
+Przypadki u¿ycia dla roli programisty to:
+\begin{itemize}
+\item \textbf{Display Account Settings} polega na wyœwietleniu przez u¿ytkownika danych na jego temat.
+\item \textbf{Display Task List} pozwala programiœcie przegl¹daæ listê przypisanych do niego zadañ. Bezpoœrednio z tej listy mo¿e przejœæ do edycji konkretnego zadania w zale¿noœci od postêpów pracy.
+\item \textbf{Change Task Status} polega na zmianie statusu zadania w zale¿noœci od postêpów pracy. Zadanie mo¿e znajdowaæ siê w czterech stanach: \emph{new} - zaraz po utworzeniu i przypisaniu do konkretnej osoby, \emph{open} - podczas pracy nad zadaniem, \emph{close} - po zakoñczeniu zadania oraz \emph{cancel} gdy zadanie zosta³o anulowane.
+\item \textbf{Report Time Effort} polega na aktualizowaniu czasu zwi¹zanego z zadaniem. Do dyspozycji programisty s¹ trzy wartoœci: \emph{estimation} uzupe³niana na pocz¹tku, stanowi¹ca oszacowanie czasu potrzebnego na realizacjê zadania, \emph{completed} wskazuj¹ca liczbê godzin spêdzonych na realizacji zadania oraz \emph{remaining} stanowi¹ca oszacowanie liczby godzin potrzebnych jeszcze do zakoñczenia zadania.
+\item \textbf{Change Task Description} pozwala programiœcie zmieniaæ opis zadania, np. poprzez dodanie komentarza opisuj¹cego rozwi¹zywane zadanie lub problemy, które pojawi³y siê podczas realizacji zadania.
+
+\end{itemize}
+
+\subsubsection*{Menad¿er}
+
+Poni¿ej zamieszczony jest diagram przypadków u¿ycia opisuj¹cy zadania wykonywane przez menad¿era~\ref{rys:managerUseCase}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics{ManagerUseCase.png}}
+    \caption{Diagram przypadków u¿ycia dla roli Manager}
+    \label{rys:managerUseCase}
+    \end{center}
+\end{figure}
+
+Przypadki u¿ycia dla roli menad¿era:
+\begin{itemize}
+\item \textbf{Display Skills} polega na wyœwietleniu dodanych do systemu umiejêtnoœci, które mog¹ zostaæ przypisane do programistów.
+\item \textbf{Manage Skills} polega na dodawaniu, usuwaniu i edycji umiejêtnoœci w systemie zarz¹dzania zadaniami.
+\item \textbf{Display Areas} polega na wyœwietleniu dodanych do systemu obszarów funkcjonalnoœci, które mog¹ zostaæ przypisane do konkretnych zadañ.
+\item \textbf{Manage Areas} polega na dodawaniu, usuwaniu i edycji obszarów funkcjonalnych w systemie zarz¹dzania zadaniami.
+\item \textbf{Display Tasks} polega na wyœwietleniu dodanych do systemu zadañ, które nie zosta³y jeszcze przypisane do ¿adnego programisty (s¹ przypisane do menad¿era).
+\item \textbf{Manage Tasks} polega na dodawaniu, usuwaniu i edycji zadañ, które powinny byæ wykonane przez programistów. Dodatkowo przypadek u¿ycia zawiera w sobie mo¿liwoœæ przypisania zadania do konkretnego programisty, co skutkuje tym, ¿e zadanie nie jest ju¿ wyœwietlane na tablicy zadañ menad¿era oraz menad¿er nie mo¿e ju¿ zarz¹dzaæ danym zadaniem.
+\item \textbf{Display Engineers} polega na wyœwietleniu dodanych do systemu programistów wraz ze szczegó³owymi informacjami takimi jak umiejêtnoœci pracownika wraz ze stopniem opanowania danej umiejêtnoœci. Dodatkowo menad¿er mo¿e przegl¹daæ historiê przypisanych zadañ do programistów oraz szczegó³y wykonania poszczególnych zadañ.
+\item \textbf{Manage Engineers} polega na zarz¹dzaniu umiejêtnoœciami pracowników (dodawanie, usuwanie). Sam menad¿er nie mo¿e zmieniaæ informacji o pracowniku i jego pozycji, na jego zlecenie mo¿e to zrobiæ administrator systemu.
+
+\end{itemize}
+
+%---------------------------------------------------------------------------
+
+\section{Przygotowanie danych}
+\label{sec:przygotowanieDanych}
+
+Aby przeprowadziæ eksperymenty zbli¿one do realnego problemu, musimy przygotowaæ spor¹ liczbê danych. Dodatkowo, dane te bêd¹ musia³y jak najbardziej odzwierciedlaæ realia. Dlatego na podstawie pewnej firmy zosta³y przygotowane dane, które pozwol¹ nam uzyskaæ oczekiwany efekt.
+
+\subsection{Skills}
+
+Przygotowany zestaw umiejêtnoœci reprezentuje typow¹ wiedzê potrzebn¹ w ró¿nych aspektach pracy programisty .net. Tak te¿ ukierunkowujemy funkcjonalnoœæ naszej firmy, jako firmy programistycznej tworz¹cej oprogramowanie w technologiach Microsoftu oraz wykorzystuj¹ce ogólne paradygmaty i praktyki dobrego programowania. Same umiejêtnoœci mo¿emy podzieliæ na kilka rodzajów:
+\begin{itemize}
+\item \textbf{Ogólne} - Architecture Fundamentals, Localization Fundamentals, Performance Fundamentals, Refactoring Fundamentals.
+\item \textbf{Technologie Internetowe} - ASP.NET Fundamentals, CSS Fundamentals, JavaScript Programming, Sharepoint, Silverlight Fundamentals.
+\item \textbf{Administracja} - BizTalk Server Administration Fundamentals, IIS Administration Fundamentals, Build Server.
+\item \textbf{Systemy Rozproszone} - COM Fundamentals, WCF Programming.
+\item \textbf{Bazy Danych} - Ms Sql Server, Oracle Database.
+\item \textbf{Interfejs GUI} - WPF Programming.
+\item \textbf{Specjalistyczne} - OPC Fundamentals, VB.NET Programming, WF Programming, XML Framework Fundamentals.
+
+\end{itemize}
+
+Sztuk¹ jest dywersyfikacja tych umiejêtnoœci wzglêdem dodanych programistów tak, aby przedstawiæ zbli¿one do realiów œrodowisko firmy programistycznej, która stara siê w ka¿dej osobie mieæ pewne specyficzne umiejêtnoœci. Dziêki temu firma staje siê samowystarczalna jeœli chodzi o wiedzê potrzebn¹ do realizacji ró¿nych zadañ w zakresie interesuj¹cych j¹ technologii.
+
+\subsection{Areas}
+
+Jako obszary funkcjonalne zosta³y wymienione najwa¿niejsze wymagania niefunkcjonalne dotycz¹ce ka¿dego projektu informatycznego, oraz pewne specyficzne funkcjonalnoœci biznesowe korzystne z punktu widzenia naszej firmy. Dodatkowo znajduje siê tutaj obszar \emph{Organization} odpowiadaj¹cy zarz¹dzaniu i wewnêtrznym spraw¹ firmy, nie powi¹zanymi z obszarami wy¿ej wymienionymi. Pozosta³e obszary to: \emph{Security}, \emph{Performance}, \emph{Business Inteligence}, \emph{Database}, \emph{Web Portal}, \emph{Business Process Studio}, \emph{Configuration Tools}, \emph{Services}, \emph{Localization}. Wyjaœnienie obszarów domeny firmy znajduj¹ siê poni¿ej.
+
+Bezpieczeñstwo i wydajnoœæ (\emph{security}, \emph{performance}) to typowe wymagania niefunkcjonalne. Obszar \emph{business inteligence} obejmuje wszystko powi¹zane z analiz¹ danych, kostkami danych, natomiast \emph{database} obejmuje obszar transakcyjnych baz danych. \emph{Web Portal} obejmuje ca³y interfejs webowy powi¹zany z produktami firmy, \emph{Business Process Studio} jest œrodowiskiem do tworzenia i zarz¹dzania procesami biznesowymi jako konkretne narzêdzie tworzone w naszej firmie. Pozosta³y nam trzy obszary, \emph{Configuration Tools} to wszystkie aplikacje i narzêdzia tworzone przez firmê w celu konfigurowania wszystkich podstawowych produktów, \emph{Services} odpowiada za serwisy serwerowe pozwalaj¹ce wykonywaæ operacje zdalnie oraz ostatni obszar \emph{Localization} odpowiada za wszelkie zadania zwi¹zane z lokalizacj¹ i globalizacj¹ aplikacji tworzonych przez firmê.
+
+\subsection{Employees}
+
+Dane pracowników, którzy bêd¹ stanowiæ kategorie dla tworzonych w przysz³oœci zadañ wymagaj¹ wiêcej uwagi. Aby odwzorowaæ naturalne œrodowisko firmy programistycznej, musimy w pewien sposób zró¿nicowaæ i zbalansowaæ umiejêtnoœci przypisane do poszczególnych pracowników.
+
+Dla celów badawczych przygotowaliœmy 16 pracowników, w tym jeden to administrator, jeden pe³ni rolê administratora oraz 14 pracowników z ró¿nymi przypisanymi umiejêtnoœciami, pozycj¹ i obszarami zainteresowañ. Tak naprawdê, dla nas interesuj¹cy jest jedynie opis tych 14 pracowników. Dziêki temu bêdziemy wiedzieæ jakiego typu zadania by³y przypisywane do poszczególnych pracowników i jak to siê przek³ada w póŸniejszym czasie na zastosowany algorytm drzewa decyzyjnego.
+
+Pracownicy bêd¹ rozró¿niani za pomoc¹ loginu (login jest unikalny dla ka¿dego pracownika). Poni¿ej znajduj¹ siê ogólne opisy ukierunkowania poszczególnych pracowników:
+\begin{itemize}
+\item \textbf{bogumil} to osoba zwi¹zana z obszarem~\emph{Database}, g³ównie z baz¹ danych Oracle. Dodatkowo dysponuje wiedz¹ z obszarów Security oraz Business Intelligence. Jej umiejêtnoœci to: \emph{Oracle Database}, \emph{Ms Sql Server} oraz \emph{Architecture Fundamentals}.
+\item \textbf{grzesiek} to osoba zwi¹zana z obszarem~\emph{Business Process Studio} oraz \emph{Web Portal}, jako jeden ze specjalistów tworzenia interaktywnego interfejsu u¿ytkownika. Jej umiejêtnoœci to: \emph{WPF Programming}, \emph{CSS Fundamentals}, \emph{JavaScript Programming}, \emph{Performance Fundamentals}, \emph{Refactoring Fundamentals} oraz \emph{Silverlight Fundamentals}.
+\item \textbf{jag} to osoba zwi¹zana z obszarem~\emph{Configuration Tools}, jako specjalista od setup'u oraz wszelakich aplikacji i pakietów konfiguracyjnych. Dodatkowo dysponuje wiedz¹ z obszaru \emph{Performance}. Jej umiejêtnoœci to: \emph{Build Server}, \emph{IIS Administration Fundamentals}, \emph{Performance Fundamentals} oraz \emph{VB.net Programming}.
+\item \textbf{karlik} to osoba zwi¹zana z obszarem~\emph{Organization}, jako prowadz¹cy i zarz¹dzaj¹cy zespo³em programistów. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Security} oraz \emph{Localization}. Jej umiejêtnoœci to: \emph{Architecture Fundamentals}, \emph{COM Fundamentals}, \emph{Localization Fundamentals}, \emph{Ms Sql Server} oraz \emph{Refactoring Fundamentals}.
+\item \textbf{grzesiul} to osoba zwi¹zana z obszarem~\emph{Database}, g³ównie z baz¹ danych Ms Sql Server. Dodatkowo dysponuje wiedz¹ z obszaru \emph{Business Intelligence} . Jej umiejêtnoœci to: \emph{Oracle Database}, \emph{Ms Sql Server}, \emph{XML Framework Fundamentals} oraz \emph{Architecture Fundamentals}.
+\item \textbf{igor} to osoba zwi¹zana z obszarem~\emph{Services}, jako specjalista od serwisów WCF oraz konfiguracji i u¿ywania serwera BizTalk. Dodatkowo dysponuje wiedz¹ z obszaru \emph{Business Process Studio}. Jej umiejêtnoœci to: \emph{BizTalk Server Administration Fundamentals}, \emph{Silverlight Fundamentals}, \emph{WCF Programming} oraz \emph{WPF Programming}.
+\item \textbf{irek} to osoba zwi¹zana z obszarem~\emph{Web Portal}, jako specjalista od aplikacji internetowych. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Performance} oraz \emph{Configuration Tools}. Jej umiejêtnoœci to: \emph{CSS Fundamentals}, \emph{JavaScript Programming}, \emph{Architecture Fundamentals}, \emph{ASP.NET Fundamentals}, \emph{Build Server}, \emph{Performance Fundamentals} oraz \emph{Refactoring Fundamentals}.
+\item \textbf{jacek} to osoba zwi¹zana z obszarem~\emph{Localization}, jako specjalista od lokalizacji i globalizacji. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Services} oraz \emph{Security}. Jej umiejêtnoœci to: \emph{WCF Programming}, \emph{Ms Sql Server}, \emph{Architecture Fundamentals}, \emph{Localization Fundamentals}, \emph{IIS Administration Fundamentals}, \emph{Performance Fundamentals} oraz \emph{Refactoring Fundamentals}.
+\item \textbf{jarek} to osoba zwi¹zana z obszarem~\emph{Web Portal} oraz \emph{Services} w konteœcie wspó³pracy~z~platfrom¹ Sharepoint. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Security}. Jej umiejêtnoœci to: \emph{Architecture Fundamentals}, \emph{ASP.NET Fundamentals}, \emph{IIS Administration Fundamentals}, \emph{JavaScript Programming}, \emph{Sharepoint} oraz \emph{WCF Programming}.
+\item \textbf{konrad} to osoba zwi¹zana z obszarem~\emph{Services}, g³ównie w kontekœcie serwera OPC jako specjalista. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Organization} oraz \emph{Configuration Tools}. Jej umiejêtnoœci to: \emph{Architecture Fundamentals	}, \emph{COM Fundamentals}, \emph{JavaScript Programming} oraz \emph{OPC Fundamentals}.
+\item \textbf{marcin} to osoba zwi¹zana z obszarem~\emph{Business Intelligence}, g³ównie w kontekœcie wykorzystywania BizTalk serwera do komunikacji z narzêdziami typu BI. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Business Process Studio} oraz \emph{Organization}. Jej umiejêtnoœci to: \emph{BizTalk Server Administration Fundamentals}, \emph{COM Fundamentals} oraz \emph{WF Programming}.
+\item \textbf{zuber} to osoba zwi¹zana z obszarem~\emph{Organization},  jako prowadz¹cy i zarz¹dzaj¹cy zespo³em programistów. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Business Process Studio} oraz \emph{Web Portal}. Jej umiejêtnoœci to: \emph{ASP.NET Fundamentals}, \emph{Localization Fundamentals}, \emph{Sharepoint} oraz \emph{WF Programming}.
+\item \textbf{szymon} to osoba zwi¹zana z obszarem~\emph{Organization}, jako specjalista od tworzenia dokumentacji. Dodatkowo dysponuje wiedz¹ z obszarów \emph{Web Portal} oraz \emph{Business Process Studio}. Jej umiejêtnoœci to: \emph{CSS Fundamentals}, \emph{WPF Programming}, oraz \emph{XML Framework Fundamentals}.
+\item \textbf{tomasz} to osoba zwi¹zana z obszarem~\emph{Business Process Studio}, jako programista logiki biznesowej i specjalista od jêzyka programowania VB.net. Dodatkowo dysponuje wiedz¹ z obszaru \emph{Configuration Tools}. Jej umiejêtnoœci to: \emph{COM Fundamentals}, \emph{IIS Administration Fundamentals}, \emph{Ms Sql Server}, \emph{Silverlight Fundamentals} oraz \emph{VB.net Programming}.
+
+\end{itemize}
+
+\subsection{Tasks}
+
+Na sam koniec, zosta³y utworzone zadania przypisane do poszczególnych osób. Ka¿da z wy¿ej opisanych osób otrzyma³a po piêæ zadañ, których opis odpowiada³ przypisanej osobie (kategorii). W sumie zosta³o przypisanych 70 zadañ, a ka¿de zadanie ma przypisan¹ przynajmniej jedn¹ umiejêtnoœæ.
+
+%---------------------------------------------------------------------------
+
+\section{Uczenie maszynowe w systemie zarz¹dzania zadaniami}
+\label{sec:uczenieMaszynoweWSystemieZarzadzaniaZadaniami}
+
+Sekcja ta jest esencj¹ pracy wykonanej do tej pory. Zawiera opis integracji implementacji algorytmu drzewa decyzyjnego (w oparciu o algorytm ID3~\cite{Quin86}) z  rozdzia³u~\ref{cha:implementacjaIndukcjiDrzew} z systemem zarz¹dzania zadaniami, stworzonemu na potrzeby naszej pracy (opisany w tym rozdziale).
+
+W pierwszej czêœci przedstawimy kroki do przygotowania potrzebnych danych, tak aby w kolejnym kroku mo¿na by³o wygenerowaæ efektywne drzewo, które bêdzie mog³o klasyfikowaæ dla nas wszystkie przysz³e zadania. W drugiej czêœci wska¿emy, w jaki sposób zintegrowaliœmy nasze rozwi¹zania i co nam daje to po³¹czenie. Na koniec podsumujemy nasze dokonania.
+
+%---------------------------------------------------------------------------
+
+\subsection{Przygotowanie danych}
+\label{sec:zastosowane praktyczne}
+
+W rozdziale tym opiszemy wszystkie kroki wykonane przez nas potrzebne do utworzenia pliku zawieraj¹ce dane w formacie zgodnym z formatem oczekiwanym przez nasz algorytm.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsubsection{Ekstrakcja danych}
+
+Dane dla systemu~\ref{cha:systemZarzadzaniaZadaniami} znajduj¹ siê w bazie danych. Jako ¿e warstwa pracy z danymi w aktualnej wersji nie wspiera wspó³pracy bezpoœrednio z baz¹ danych, wyci¹gniemy za pomoc¹ prostej aplikacji dane z bazy danych do pliku tekstowego. Operacjê tê zrealizujemy z wykorzystaniem poni¿szego programu~\ref{lst:ekstrahowanieDanych}. Program tworzy pocz¹tkowo plik (\emph{db\_management.dat}) i otwiera strumieñ zapisu do pliku. Nastêpnie, wykorzystuj¹c technologiê Entity Framework 4~\cite{EntityFramework} oraz wczeœniej przygotowane struktury danych dla systemu zarz¹dzania zadaniami, tworzymy kontekst bazy danych (\emph{TaskManagementContext}) który dostarcza nam wszystkich potrzebnych danych. Zapisujemy jako kategoriê przyk³adu login pracownika oraz zapisujemy obszar, którego dotyczy zadanie. Nastêpnie iterujemy po wszystkich umiejêtnoœciach przypisanych do zadania i oznaczamy je jako wymagane (\emph{true}). Tak przygotowany zbiór danych zapisujemy jako wiersz w zbiorze danych, który bêdzie nastêpnie przekszta³cany do postaci specyficznej dla naszego algorytmu.
+
+\lstset{tabsize=2, basicstyle=\small}
+
+\begin{lstlisting}[caption={Ekstrahowanie danych do pliku z bazy danych - system zarz¹dzania zadaniami}, language=Java, frame = trBL, mathescape=true, label={lst:ekstrahowanieDanych}]
+var outputFile = new FileInfo("db_management.dat");
+
+using (var fileStream = outputFile.OpenWrite())
+{
+	using (var streamWriter = new StreamWriter(fileStream))
+	{
+		using (var dbContext = new TaskManagementContext())
+		{
+			foreach (var task in dbContext.Tasks)
+			{
+				var dbManagementRow = new DbManagementRow();
+
+				dbManagementRow.Employee = task.Employee.Login;
+				dbManagementRow.Area = task.Area.Name.GetEnum<AreaName>();
+
+				foreach (var taskSkill in task.TaskSkills)
+					dbManagementRow.CheckValue(taskSkill.Skill.Name);
+
+				streamWriter.WriteLine(dbManagementRow.ToString());
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+Wspomniany program~\ref{lst:ekstrahowanieDanych} zawiera strukturê danych stworzon¹ dla celów ekstrahowania i zapisywania danych z bazy danych - \emph{DbManagementRow}. Jest to prosta struktura sk³adaj¹ca siê z trzech czêœci. Pierwsz¹ jest kategoria w postaci napisu - w³aœciwoœæ~\emph{Employee}. Drug¹ czêœci¹ jest w³aœciwoœæ~\emph{Area}, które posiada wartoœæ enumeracji zawieraj¹cej wszystkie mo¿liwe nazwy obszarów. Ostatni¹ czêœci¹ jest s³ownik zawieraj¹cy wskazania na umiejêtnoœci jakie mo¿e wymagaæ dane zadanie oraz czy ta konkretna umiejêtnoœæ powinna byæ wymagana (ustawienie jej na wartoœæ~\emph{true}).
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsubsection{Plik mapowania danych}
+
+W sekcji~\ref{sec:dataTransformator} omawialiœmy komponent transformuj¹cy dane oraz plik mapowania danych pozwalaj¹cy przekszta³ciæ format danych ze specyficznego dla systemu do formatu wymaganego przez nasz algorytm. Komponent ten (aplikacja) zostanie teraz wykorzystana, aby wczeœniej przygotowany plik tekstowy z danymi przetworzyæ do pliku xml z potrzebnymi danymi.
+
+\begin{lstlisting}[caption={Plik konfiguracyjny dla danych z systemu zarz¹dzania zadaniami z rozdzia³u~\ref{cha:systemZarzadzaniaZadaniami}:},language=Xml,label={lst:plikMapowaniaDanychIntegracja}]
+<DataMapping>
+  <Attributes>
+    <string>Area</string>
+    <string>WCF Programming</string>
+    <string>WPF Programming</string>
+    <string>WF Programming</string>
+    <string>Ms Sql Server</string>
+    <string>Oracle Database</string>
+    <string>JavaScript Programming</string>
+    <string>CSS Fundamentals</string>
+    <string>OPC Fundamentals</string>
+    <string>Silverlight Fundamentals</string>
+    <string>ASP.NET Fundamentals</string>
+    <string>Localization Fundamentals</string>
+    <string>Architecture Fundamentals</string>
+    <string>Performance Fundamentals</string>
+    <string>COM Fundamentals</string>
+    <string>Refactoring Fundamentals</string>
+    <string>Build Server</string>
+    <string>VB.net Programming</string>
+    <string>Sharepoint</string>
+    <string>IIS Administration Fundamentals</string>
+    <string>BizTalk Server Administration Fundamentals</string>
+    <string>XML Framework Fundamentals</string>
+    <string>Employee</string>
+  </Attributes>
+  <TransformingEmptyValuesMode>Remove</TransformingEmptyValuesMode>
+  <Category>Employee</Category>
+  <Delimiter>;</Delimiter>
+</DataMapping>
+\end{lstlisting}
+
+Do tego celu bêdziemy te¿ potrzebowaæ wspomnianego pliku mapowania danych~\ref{lst:plikMapowaniaDanychIntegracja}. Plik mapowania danych przedstawia opis atrybutów dla zadania: obszar, umiejêtnoœci oraz login pracownika jako kategoria. Dodatkowo zawiera oznaczenie~\emph{Employee} jako atrybutu kategorii, ogranicznik wartoœci atrybutu (\emph{;}) oraz strategie postêpowania z brakuj¹cymi danymi (usuwanie wierszy).
+
+Dziêki u¿yciu aplikacji transformuj¹cej oraz przygotowanego pliku mapowania otrzymujemy kompletny plik z danymi w formacie zgodnym z naszym algorytmem. W nastêpnej czêœci poka¿emy, jak zintegrowaæ nasz system~\ref{cha:systemZarzadzaniaZadaniami} z algorytmem drzew decyzyjnych~\ref{cha:implementacjaIndukcjiDrzew} oraz jak u¿yæ wygenerowany plik z danymi.
+
+%---------------------------------------------------------------------------
+
+\subsection{Integracja systemu z algorytmem}
+\label{sec:realizacja}
+
+Integracja systemu zarz¹dzania zadaniami z algorytmem drzew decyzyjnych rozpoczyna siê od dostarczenia przygotowanego przez nas pliku z danymi we wczeœniejszej czêœci. Plik ten bêdzie wykorzystywany podczas generowania drzewa. Drzewo generowane przez nas bêdzie drzewem nie zoptymalizowanym~\ref{cha:implementacjaIndukcjiDrzew}, poniewa¿ gdybyœmy wybrali podstawowy algorytm generowania drzewa, atrybut dotycz¹cy obszaru zdominowa³ by wygenerowane drzewo przez licznoœæ wartoœci, które przyjmuje (enumerowane obszary).
+
+\subsubsection{Budowanie drzewa}
+
+Na samym pocz¹tku ³adowania siê naszego systemu dodajemy kod odpowiedzialny za stworzenie instancji algorytmu drzew decyzyjnych oraz za zbudowanie drzewa na podstawie przygotowanego i dostarczonego pliku z danymi. Kod wymienionych operacji znajduje siê poni¿ej~\ref{lst:inicjalizacjaDrzewa}.
+
+\begin{lstlisting}[caption={Inicjalizacja i budowanie drzewa - system zarz¹dzania zadaniami}, language=Java, frame = trBL, mathescape=true, label={lst:inicjalizacjaDrzewa}]
+var dbManagementXmlFileName 
+	= ConfigurationManager.AppSettings["DBManagementXmlFileName"];
+            
+IDataLoader loader 
+	= DataLoader.CreateIt(EntityDataValidator.CreateIt());
+var data = loader.LoadFromFile(dbManagementXmlFileName);
+
+_algorithm = ID3Algorithm.CreateIt(data);
+
+_algorithm.BuildDecisionTree();
+\end{lstlisting}
+
+Kod ten zawiera pocz¹tkowo odczytanie œcie¿ki do pliku z danymi ustawionej w pliku konfiguracyjnym systemu. Nastêpnie œcie¿ka ta jest wykorzystana do za³adowania danych do pamiêci. Dane te s¹ w koñcowym etapie kodu wykorzystane do zbudowania drzewa, które w póŸniejszym czasie bêdzie wykorzystywane do klasyfikacji zadañ.
+
+\subsubsection{Dopasowanie kategorii}
+
+Ostatnim elementem jest umo¿liwienie za pomoc¹ interfejsu aplikacji internetowej (naszego systemu) wykorzystanie mo¿liwoœci klasyfikacji przez nasz algorytm. Dziêki temu, ¿e budowa drzewa rozpoczyna siê przy starcie aplikacji, najwiêkszy koszt zwi¹zany z wykorzystaniem algorytmów decyzyjnych jest ju¿ za nami. Klasyfikacja praktycznie odbywa siê b³yskawicznie, zale¿y jedynie od pliku z danymi, który zosta³ przez nas przygotowany wczeœniej oraz od modyfikacji samego algorytmu generowania drzewa.
+
+W naszym zastosowaniu regeneracja drzewa sprowadza siê do wykorzystania aktualnych danych z bazy danych, powtórzeniu kroków przygotowania danych oraz ponownemu uruchomieniu systemu zarz¹dzania zadaniami. Wraz z wiekiem ¿ycia systemu wzrasta jakoœæ podejmowanych decyzji przez algorytm. Dlatego te¿ w pracy podjêliœmy decyzjê, ¿e wykorzystamy stworzone drzewo w celu sugerowania menad¿erowi, który pracownik najlepiej pasuje do utworzonego zadania.
+
+W tym celu, zosta³a utworzona nowa akcja dla kontrolera zadañ, która sugeruje wybór pracownika za pomoc¹ klasyfikacji drzewa decyzyjnego. Metoda ta analizuje stan zadania: obszar do którego zosta³ przypisany oraz wymagane umiejêtnoœci i na tej podstawie wybiera najlepszego pracownika podaj¹c jego login. Menad¿er wywo³uj¹cy tê metodê otrzymuje detale opisuj¹ce danego pracownika. Pozwala to na wymuszenie na menad¿erze weryfikacji klasyfikacji dokonanej przez algorytm. W razie b³êdnego dopasowania przez algorytm, menad¿er przypisuje zadanie do innej osoby, a algorytm na podstawie œwie¿ych danych jest w stanie poprawiæ swoj¹ jakoœæ klasyfikacji.
+
+%---------------------------------------------------------------------------
+
+\section{Podsumowanie}
+\label{sec:systemZarzadzaniaZadaniamiPodsumowanie}
+
+Na tym koñczymy czwarty rozdzia³, opisuj¹cy system do zarz¹dzania zadaniami stworzony na potrzeby naszej pracy. System ten zosta³ rozwiniêty wystarczaj¹co, aby móg³ symulowaæ firmê informatyczn¹, gdzie role s¹ podzielone na: administratora, menad¿era oraz in¿ynierów. Za pomoc¹ systemu mo¿emy przygotowywaæ zadania do realizacji, po przypisaniu ich do konkretnego pracownika zmieniaæ ich stan i raportowaæ stan i czas pracy.
+
+Dodatkowo w rozdziale tym opisaliœmy przygotowane dane, które w rozdziale~\ref{cha:wynikiBadanEksperymentalnych} pozwoli nam na przeprowadzenie badañ nad zbli¿onym do rzeczywistego, w miarê mo¿liwoœci, systemem. Na koniec, opisana zosta³a integracja implementacji algorytmu drzew decyzyjnych z rozdzia³u~\ref{cha:implementacjaIndukcjiDrzew} z systemem omawianym w tym rozdziale, aby wykorzystaæ mo¿liwoœci metod uczenia maszynowego. Dziêki ³atwej integracji dobrze zdefiniowanych komponentów algorytmu oraz zastosowaniu warstwy transformacji danych do potrzebnego formatu, bezproblemowo byliœmy w stanie wykorzystaæ si³ê algorytmu drzew decyzyjnych w istniej¹cym systemie.
+
+W nastêpnej czêœci zostanie przeprowadzona seria badañ, które wska¿¹ co mo¿emy osi¹gn¹æ przy takiej iloœci danych za pomoc¹ naszego algorytmu i jak wp³ywa to na jakoœæ pracy osób w firmie programistycznej.
+
+%---------------------------------------------------------------------------

@@ -1,0 +1,97 @@
+jacek Jacek Spólnik							wcf(3), archit(2), asp.net(1), localiz(3), IIS(1), js(1), perf(2), Refact(3)
+
+HIGH WCF, LOCALIZ, REFACT // LOW ASP.NET, JS // NORMAL ARCHIT, PERF
+
+grzesiul Grzegorz Koz³owski  			mssql(2), oracle(1), archit(1), xml(2)
+
+HIGH XML // NORMAL/LOW MSSQL
+
+grzesiek Grzegorz Baranik  			   	wpf(2), css(2), js(2),  perf(1), Refact(1), silverlight(3)
+
+HIGH SILVERLIGHT, WPF // NORMAL CSS, JS, REFACT
+
+irek Ireneusz Makowski  			   		js(2),  perf(3), archit(2), asp.net(2), build(2), css(3), Refact(2)
+
+HIGH PERF, JS, CSS // NORMAL JS, ARCHIT, BUILD
+
+jarek Jaros³aw Machaj  					archit(1), asp.net(3), IIS(3), js(3), sharepoint(2), wcf(2), wf(2)
+
+HIGH ASP.NET, IIS, JS //  NORMAL WF/WCF
+
+karlik Grzegorz Karlik  			   			archit(3), COM(3), localiz(2), mssql(2), Refact(2)
+
+HIGH ARCHIT, COM, LOCALIZ // NORMAL REFACT
+
+szymon Szymon Cepuch  				CSS(3), js(2), wpf(3), xml(1)
+
+HIGH CSS, WPF // LOW/NORMAL XML
+
+tomasz Tomasz Gancarz  				COM(2), IIS(2), mssql(2), silverlight(2), vb(2)
+
+HIGH COM, IIS, MSSQL, SILVERLIGHT // NORMAL/LOW VB
+
+igor Igor Ocha³  					   			silverlight(2), biztalk(2), wcf(2), wpf(1)
+
+HIGH, SILVERLIGHT, BIZTALK, WCF // LOW WPF
+
+marcin Marcin Wzorek  				  	biztalk(3), COM(3), wf(1)
+
+High, BIZTALK, COM // LOW WF
+
+bogumil Bogumi³ Fajfer  			   		oracle(3), mssql(2), archit(1)
+
+HIGH, ORACLE, ARCHIT // HIGH/NORMAL Oracle, MSSQL, archit
+
+konrad Konrad Kaczanowski  			OPC(3), archit(2), COM(1), js(3)
+
+High, OPC, JS // LOW ARCHIT, COM
+
+kuba Jakub Latawiec  				  	 	archit(2), asp.net(3), css(1), js(2), mssql(2)
+
+High, ASP.NET, ARCHIT // LOW JS, CSS
+
+jag Grzegorz Jankowski  			   		build(3), vb(3), IIS(2), perf(1)
+
+High, Build, VB // NORMAL IIS // LOW PERF
+
+zuber Pawe³ ¯uber  					   	sharepoint(3), asp.net(1), localiz(1), wf(3)
+
+High, Sharepoint, WF // LOW asp.net, localiz
+
+
+
+
+   Login	 		Name	 	Surname	 	Employment_Date	 Position
+7 bogumil	 	Bogumi³	Fajfer	 		2009-12-20	 			 Software Engineer                  Security, Business inteligence, Database,
+7 grzesiek	 	Grzegorz	Baranik		2010-04-01	 			 Software Engineer				Localization, Business Process Studio, Web Portal
+7 grzesiul	 	Grzegorz	Koz³owski	2010-07-01	 			 Software Engineer					Business Inteligence, Database
+7 igor	 			Igor	 		Ocha³	 		2006-03-20	 			 Senior Software Engineer   Services, Business Process Studio
+7 irek	 			Ireneusz	Makowski	 	2005-03-01	 			 Senior Software Engineer	Performance, Web Portal, Configuration Tools
+7 jacek	 		Jacek	 	Spólnik	 		2009-04-01	 			 Software Engineer					Services, Security, Localization
+7 jag	 			Grzegorz	Jankowski	2007-03-20	 			 Software Engineer				Configuration Tools, Performance
+7 jarek	 		Jaros³aw	Machaj	 		2008-03-20	 			 Software Engineer					Web Portal, Services, Security
+7 karlik	 		Grzegorz	Karlik	 		2004-03-20	 			 Lead Software Engineer			Organization, Localization, Security
+7 konrad	 		Konrad	 	Kaczanowski 2006-09-20	 		 Senior Software Engineer	Configuration Tools, Services, Organization
+7 kuba	 		Jakub	 	Latawiec	 	2004-02-20	 			 Lead Software Engineer			Organization, Web Portal, Services
+7 marcin	 		Marcin	 	Wzorek	 	2005-03-20	 			 Lead Software Engineer		Organization, Business Process Studio, Business Inteligence
+7 szymon	 	Szymon	Cepuch	 	2006-03-20	 			 Senior Software Engineer		Web Portal, Business Process Studio
+7 tomasz	 	Tomasz	Gancarz	 	2005-02-20	 			 Senior Software Engineer		Localization, Configuration Tools, Business Process Studio
+7 zuber	 		Pawe³	 	¯uber	 		2005-06-20	 			 Lead Software Engineer		Organization, Business Process Studio, Web Portal
+
+
+@mail.com
+2007!(*^
+
+
+10 Security									Architecture Fundamentals,  ASP.NET Fundamentals, IIS Administration Fundamentals. Ms Sql Server, Sharepoint, WCF Programming, XML Framework Fundamentals
+10 Performance							IIS Administration Fundamentals,  Java Script Programming, Ms Sql Server, Performance Fundamentals, Refactoring Fundamentals, XML Framework Fundamentals
+10 Business Inteligence				Ms Sql Server, Oracle Database, Sharepoint, Silverlight Fundamentals, XML Framework Fundamentals
+10 Database								Architecture Fundamentals, Ms Sql Server, Oracle Database. Performance Fundamentals
+10 Organization							Build Server, Ms Sql Server, Oracle Database, Sharepoint, VB.net Programming
+10 Web Portal								Architecture Fundamentals, CSS Fundamentals, Distributed Programming Fundamentals, IIS Administration Fundamentals, Java Script Programming. Sharepoint, Silverlight Fundamentals, WCF Programming, WF Programming
+10 Business Process Studio			Architecture Fundamentals, BizTalk Server Administration Fundamentals, CSS Fundamentals, Java Script Programming, Refactoring Fundamentals, Silverlight Fundamentals, TDD Fundamentals, WCF Programming, WF Programming, WPF Programming
+10 Configuration Tools				Build Server, IIS Administration Fundamentals, Ms Sql Server, OPC Fundamentals, Sharepoint, TDD Fundamentals, VB.net Programming, WCF Programming, WPF Programming, XML Framework Fundamentals
+10 Services									BizTalk Server Administration Fundamentals,  COM Fundamentals, Distributed Programming Fundamentals, IIS Administration Fundamentals, Java Script Programming, OPC Fundamentals, Sharepoint, Silverlight Fundamentals. TDD Fundamentals, WCF Programming, WF Programming
+10 Localization							COM Fundamentals, Ms Sql Server, Oracle Database, Sharepoint, TDD Fundamentals, WPF Programming, XML Framework Fundamentals
+
+

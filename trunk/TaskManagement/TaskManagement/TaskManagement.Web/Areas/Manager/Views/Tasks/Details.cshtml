@@ -1,0 +1,73 @@
+﻿@model TaskManagement.Web.Models.Task
+@using TaskManagement.Web.Helpers
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Task</legend>
+
+    <p>
+        <table>
+            <tr>
+                <th>Name</th>
+                <td>@Model.Name</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>@Model.Description</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.EstimatedTime)</th>
+                <td>@Html.DisplayFor(model => model.EstimatedTime)</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.RemainingTime)</th>
+                <td>@Html.DisplayFor(model => model.RemainingTime)</td>
+            </tr>
+            <tr>
+                <th>@Html.LabelFor(model => model.SpentTime)</th>
+                <td>@Html.DisplayFor(model => model.SpentTime)</td>
+            </tr>
+            <tr>
+                <th>Priority</th>
+                <td>@Html.GetPriority(@Model.Priority)</td>
+            </tr>
+            <tr>
+                <th>Area</th>
+                <td>@Model.Area.Name</td>
+            </tr>
+        </table>
+    </p>
+</fieldset>
+<fieldset>
+    <legend>Skills</legend>
+
+    <p>
+        <table>
+            <tr>
+                <th>
+                    Name
+                </th>             
+            </tr>
+
+        @foreach (var item in ViewBag.Skills) {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+            </tr>
+        }
+
+        </table>
+    </p>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+

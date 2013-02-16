@@ -1,0 +1,76 @@
+﻿@model IEnumerable<TaskManagement.Web.Models.Task>
+@using TaskManagement.Web.Helpers
+
+@{
+    ViewBag.Title = "Task List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Task List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th></th>
+        <th>
+            Name
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Estimate
+        </th>
+        <th>
+            Completed
+        </th>
+        <th>
+            Remaining
+        </th>
+        <th>
+            Priority
+        </th>
+        <th>
+            Area
+        </th>
+    </tr>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.ActionLink("Add Skill", "AddSkill", new { id=item.ID }) |
+            @Html.ActionLink("Remove Skill", "RemoveSkill", new { id=item.ID }) |
+            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+            @Html.ActionLink("Suggest Employee", "SuggestEmployee", new { id = item.ID }) |
+            @Html.ActionLink("Suggest Employee Optimized", "SuggestEmployeeOptimized", new { id = item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+        </td>
+        <td>
+            @item.Name
+        </td>
+        <td>
+            @Html.Truncate(@item.Description)
+        </td>
+        <td>
+            @item.EstimatedTime
+        </td>
+        <td>
+            @item.SpentTime
+        </td>
+        <td>
+            @item.RemainingTime
+        </td>
+        <td>
+            @Html.GetPriority(@item.Priority)
+        </td>
+        <td>
+            @item.Area.Name
+        </td>
+    </tr>
+}
+
+</table>

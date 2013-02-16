@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<DataMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Attributes>
+    <string>PlayTennis</string>
+    <string>Outlook</string>
+    <string>Temperature</string>
+    <string>Humidity</string>
+    <string>Wind</string>
+  </Attributes>
+  <TransformingEmptyValuesMode>Remove</TransformingEmptyValuesMode>
+  <Category>PlayTennis</Category>
+  <Delimiter>;</Delimiter>
+</DataMapping>

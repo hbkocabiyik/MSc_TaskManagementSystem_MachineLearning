@@ -1,0 +1,34 @@
+﻿@model TaskManagement.Web.Models.Employee
+
+@{
+    ViewBag.Title = "Suggested Employee";
+}
+
+<h2>Suggested Employee</h2>
+
+<fieldset>
+    <legend>Employee</legend>
+
+    <div class="display-label">Login</div>
+    <div class="display-field">@Model.Login</div>
+
+    <div class="display-label">Name</div>
+    <div class="display-field">@Model.Name</div>
+
+    <div class="display-label">Surname</div>
+    <div class="display-field">@Model.Surname</div>
+
+    <div class="display-label">Role</div>
+    <div class="display-field">@Model.Role</div>
+
+    <div class="display-label">EmploymentDate</div>
+    <div class="display-field">@String.Format("{0:g}", Model.EmploymentDate)</div>
+
+    <div class="display-label">PositionLevel</div>
+    <div class="display-field">@Model.PositionLevel</div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+

@@ -1,0 +1,48 @@
+\chapter{Zakoñczenie}
+\label{cha:zakonczenie}
+
+Jest to rozdzia³ podsumowuj¹cy nasze dokonania w ca³ej pracy. Rozdzia³ sk³ada siê z wniosków wyp³ywaj¹cych z samej pracy magisterskiej oraz z mo¿liwych kierunków badañ i rozwoju samego algorytmu oraz warstwy integracji.
+
+\section{Wnioski}
+\label{sec:wnioski}
+
+Niezaprzeczalnie metody uczenia maszynowego s¹ sporym u³atwieniem w naszym ¿yciu. Praktycznie coraz czêœciej bêd¹ obecne w naszym ¿yciu, czy to w analizach bankowych czy operatorów telekomunikacyjnych, a mo¿e z czasem w urz¹dzeniach u¿ytku domowego, które wzbogacone o pewn¹ inteligencjê bêd¹ w stanie dostosowaæ siê do wymagañ swoich w³aœcicieli.
+
+Ogólnie pojête zarz¹dzanie zadaniami to problem bardzo dobrze rozwi¹zywany przez algorytmy drzew decyzyjnych. Oczywiœcie pewna praca jest wymagana od in¿yniera, aby móg³ wyspecjalizowaæ algorytm uczenia maszynowego dla konkretnego systemu. Jednak¿e, ka¿de œrodowisko zmieniaj¹ce siê z czasem i daj¹ce siê opisaæ w pewien strukturalizowany sposób mo¿e byæ wspierane przez metody uczenia maszynowego. Co wiêcej, z czasem te algorytmy jakoœci¹ podejmowania decyzji mog¹ dorównaæ ludziom lub nawet ich przewy¿szyæ. Przy po³¹czeniu z du¿o szybszym przetwarzaniem ogromnych iloœci danych i szybkoœci¹ dzia³ania mog¹ staæ siê nieod³¹cznym elementem systemów informatycznych w przysz³oœci.
+
+Oczywiœcie algorytmy uczenia maszynowego w ogólnej postaci wymagaj¹ sporo pracy, aby wykorzystaæ maksymalnie ich mo¿liwoœci w konkretnym specjalizowanym œrodowisku. Jednak¿e wraz z wzrastaj¹c¹ iloœci¹ danych i potrzeb¹ szybkiej analizy tych danych bêdzie wzrastaæ znaczenie metod uczenia maszynowego, a koszt wysi³ku dostosowania takiego algorytmu bêdzie mala³ wzglêdem zysku osi¹ganego w zwi¹zku z jego u¿yciem.
+
+\section{Co zosta³o zrealizowane w ramach pracy}
+
+Powy¿sze wnioski mog³y zostaæ wyci¹gniête, dziêki wysi³kowi w³o¿onemu w prace. W ramach pracy zosta³ zaimplementowany algorytm drzew decyzyjnych, bazuj¹cy na algorytmie ID3~\cite{Quin86}. Dodatkowo, zosta³y zaimplementowane rozszerzenia zaproponowane w rozdziale~\ref{cha:uczenieMaszynowe}, które pozwoli³y zniwelowaæ s³aboœci podstawowej wersji algorytmu. Pozytywne efekty tego zabiegu mo¿na zaobserwowaæ w rozdziale~\ref{cha:wynikiBadanEksperymentalnych}, podczas którego przeprowadziliœmy seriê eksperymentów pracy z algorytmem. Algorytm zosta³ zaimplementowany w jêzyku C\#, co zas³uguje na uwagê, ze wzglêdu na brak dobrej i pe³nej implementacji algorytmu drzew decyzyjnych dostêpnej za darmo w sieci. Dodatkowo, algorytm zosta³ przez nas zmodyfikowany poprzez wprowadzenie rozszerzenia, umo¿liwiaj¹cego in¿ynierowi podjêcie decyzji, jak nale¿y postêpowaæ z wieloma dopasowanymi kategoriami. Rozszerzenie to opisywane jest w rozdziale~\ref{cha:implementacjaIndukcjiDrzew}.
+
+Kolejn¹ rzecz¹, stworzon¹ podczas realizacji pracy jest system zarz¹dzania zadaniami. System by³ stworzony w oderwaniu od algorytmu, tak aby pozwoliæ w póŸniejszym czasie zintegrowaæ te dwa elementy. Pozwoli³o to nam zasymulowaæ rzeczywiste wykorzystanie algorytmu w ju¿ istniej¹cym systemie informatycznym. Dodatkowo, przygotowany zosta³ obszerny zestaw danych, który po zintegrowaniu algorytmu z systemem, pozwoli³ na przeœledzenie korzyœci i ograniczeñ powi¹zanych z wykorzystaniem algorytmu uczenia maszynowego, z wyszczególnieniem algorytmu drzew decyzyjnych.
+
+\section{Kierunki badañ}
+\label{sec:kierunkiBadan}
+
+Pierwszym mo¿liwym kierunkiem badañ jest zastosowanie zamiast algorytmu ID3 jako podstawy do implementacji naszego algorytmu, algorytmu C4.5~\cite{Quin93}. Algorytm ten zawiera kilka ulepszeñ w stosunku do swojego poprzednika, które mog³y by wp³yn¹æ pozytywnie na wygenerowane drzewo decyzyjne i mo¿liwoœci konfiguracji samej generacji drzewa.
+
+Kolejnym elementem zwi¹zanym z naszym algorytmem i mo¿liwymi usprawnieniami jest dopuszczenie, aby algorytm na podstawie podanego b³êdu podawa³ kilka kategorii mieszcz¹cych siê w danym b³êdzie dopasowanych do danego przyk³adu. Wówczas w wyniku otrzymujemy posortowane kategorie w zale¿noœci od ich trafnoœci wzglêdem przyk³adu. Dodatkowo, mo¿emy równie¿ wykorzystaæ wtedy rozszerzenie w naszym algorytmie i zaimplementowaæ strategiê postêpowania z wieloma kategoriami, np. promowaæ osoby z najmniejszym obci¹¿eniem wœród najlepiej dopasowanych do danego zadania.
+
+W rozdziale~\ref{cha:implementacjaIndukcjiDrzew} wspominaliœmy o mo¿liwym problemie wykorzystywania pliku xml do przechowywania danych ucz¹cych. Faktycznie, w bardzo du¿ych systemach mo¿e to byæ du¿y problem. Dlatego jednym z elementów, który nale¿a³o by rozwin¹æ jest przechowywanie danych w formacie specyficznym dla algorytmu w efektywnym Ÿródle, np. w relacyjnej bazie danych.
+
+Wspominanym ju¿ wczeœniej elementem, który mo¿na wzbogaciæ i rozszerzyæ jest stworzona przez nas warstwa transformacji i ³adowania danych. Aktualnie operuje ona tylko na plikach tekstowych, stosunkowo ³atwo mo¿na j¹ rozszerzyæ o wspó³pracê z baz¹ danych, serwisem webowym, plikiem typu excel lub innymi Ÿród³ami danych. Pozwoli³o by to na unikniêcie potrzeby transformacji danych po stronie konkretnego systemu do pliku tekstowego, mo¿na by od razu wykorzystaæ mo¿liwoœci konkretnego Ÿród³a danych do generowania finalnego pliku danych.
+
+W naszym konkretnym przypadku, sam algorytm mo¿na rozszerzyæ o kilka funkcjonalnych rzeczy. Mianowicie, moglibyœmy wykorzystaæ rozró¿nienie poziomu umiejêtnoœci i zwiêkszyæ iloœæ parametrów dopasowania algorytmu. Ka¿da umiejêtnoœæ by³a by potrojona, przez dowi¹zanie stopnia opanowania wiedzy z danego obszaru. Niestety, zwiêkszy³o by to wymaganie wobec iloœci dostarczonych danych ucz¹cych, aby drzewo skutecznie mog³o klasyfikowaæ nowe przyk³ady. Podobnie w ka¿dej innej domenie problemu, mo¿emy staraæ siê jak najdok³adniej opisywaæ kolejne przyk³ady, jednak tak jak wspomnieliœmy wi¹¿e siê to z potrzeb¹ dostarczenia wiêkszej iloœci danych ucz¹cych.
+
+Oczywistym rozszerzeniem algorytmu jest dodanie wiêkszej iloœci danych. Wiêksza iloœæ danych, które s¹ niesprzeczne i kompletne wp³ywa korzystnie na jakoœæ dzia³ania algorytmu i sprawia, ¿e jego decyzyjnoœæ jest bardziej kompletna.
+
+\section{Podsumowanie}
+\label{sec:podsumowanie}
+
+Podsumowuj¹c, wiêkszoœæ aspektów poruszona w pracy mo¿e byæ przez czytaj¹cego odnaleziona w pozycjach znajduj¹cych siê w bibliografii. Prawdopodobnie z czasem pojawi siê coraz wiêcej aktualnej literatury równie¿ w Polsce zwi¹zanych z metodami uczenia maszynowego, wraz z rosn¹cym znaczeniem tej dziedziny.
+
+
+
+
+
+
+
+
+

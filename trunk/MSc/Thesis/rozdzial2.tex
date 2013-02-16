@@ -1,0 +1,607 @@
+\chapter{Uczenie maszynowe}
+\label{cha:uczenieMaszynowe}
+
+W niniejszym rozdziale przedstawione zostan¹ zagadnienia teoretyczne bezpoœrednio zwi¹zane~z~tematyk¹ pracy. Szczegó³owo wyjaœnione zostanie pojêcie uczenia siê oraz ró¿ne podejœcia wykorzystuj¹ce tê koncepcjê. Omówiona zostanie indukcja drzew decyzyjnych w sposób na tyle szczegó³owy, aby zrozumieæ podjête przez nas decyzje w implementacji algorytmu uczenia maszynowego. Na koniec dokonamy krótkiego podsumowania oraz wska¿emy prace pozwalaj¹ce na dalsze poszerzanie wiedzy o~drzewach decyzyjnych.
+
+%---------------------------------------------------------------------------
+
+\section{Zagadnienia podstawowe}
+\label{sec:zagadnieniaPodstawowe}
+
+Cz³owiek od momentu stworzenia pierwszych komputerów zastanawia³ siê, czy komputery bêd¹ kiedyœ~w~stanie dorównaæ ludziom. Od samego pocz¹tku podejmowano ró¿ne próby uczenia komputerów,~w~jaki sposób powinny postêpowaæ aby sprostaæ wyzwaniom, które przed nimi stawiamy. Sprowadza³o siê to g³ównie do tworzenia pewnego algorytmu, który~w~okreœlony sposób radzi³ sobie~z~konkretnym zadaniem. Jednak¿e aby komputer móg³ dzia³aæ bez pomocy~z~zewn¹trz, nale¿a³o go wyposa¿yæ~w~mechanizm pozwalaj¹cy na uczenie siê na podstawie doœwiadczeñ co skutkowa³oby ci¹g³¹ popraw¹~w~dzia³aniu maszyny~\cite{Mit97}. 
+
+WyobraŸmy sobie komputery, które szybko~i~skutecznie diagnozuj¹ choroby, wykrywaj¹ anomalie pogodowe, pomagaj¹ tworzyæ inteligentne domy dostosowuj¹ce siê do modelu ¿ycia ka¿dej rodziny. Badania nad mo¿liwoœci¹ uczenia maszyn prowadz¹ równie¿ do lepszego zrozumienia ludzkiej natury uczenia siê. Dziedzina ta ci¹gle siê rozwija, wiele jeszcze brakuje aby uczyniæ maszynê zdoln¹ do pojmowania wiedzy na poziomie cz³owieka, aczkolwiek efekty aktualnego stanu wiedzy ju¿ s¹ wykorzystywane. Dziedziny takie jak rozpoznawanie mowy, medycyna, rozpoznawanie obrazów czerpi¹ ca³ymi garœciami~z~tego co oferuj¹ aktualne algorytmy uczenia maszynowego~\cite{Mit97}.
+
+Rozdzia³ ten skupia siê na podstawowej teorii powi¹zanej~z~tematyk¹ uczenia maszynowego. Opisuje znaczenie tej dziedziny wraz~z~prób¹ zdefiniowania czym w³aœciwie jest uczenie siê. Dodatkowo zawiera miêdzy innymi taksonomiê maszynowego uczenia siê oraz powi¹zanie ze sztuczn¹ inteligencj¹~i~innymi dziedzinami naukowymi.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Definicja~i~znaczenie uczenia siê}
+\label{sec:definicjaZnaczenieUczenia}
+
+Cz³owiek ucz¹c siê zdobywa pewne umiejêtnoœci takie jak jazda na rowerze, bieganie, czytanie czy chodzenie. Podczas tego procesu zdarza siê nam pope³niaæ b³êdy przez co wykonujemy kolejne próby a¿ do zadowalaj¹cych nas wyników. Nale¿y tu zauwa¿yæ, ¿e pope³nianie b³êdów równie¿ jest czêœci¹ uczenia siê. Wykorzystujemy w³asne pora¿ki~i~doœwiadczenia~w~celu podejmowania lepszych decyzji~w~przysz³oœci. Uczymy siê czytaj¹c ksi¹¿ki, korzystaj¹c~z~pomocy nauczycieli. Uogólniamy nasze obserwacje~i~odkrywamy powi¹zania miêdzy ró¿nymi faktami. Prowadzi to do prostego wniosku, chc¹c mówiæ~o~ucz¹cych siê programach komputerowych musimy mieæ na uwadze programy posiadaj¹ce pewne szczególne w³aœciwoœci,~a~dok³adniej rzecz ujmuj¹c posiadaj¹ce zdolnoœæ do uczenia siê~\cite{Cich07}.
+
+Postaramy siê sprecyzowaæ w³aœciwoœci sk³adaj¹ce siê na zdolnoœæ do uczenia siê. Zaczniemy od prostego elementu jakim jest \emph{zmiana}. Mówi¹c~o~uczeniu siê mamy na myœli pewn¹ zachodz¹c¹~w~czasie zmianê~w~aktualnym stanie wiedzy lub umiejêtnoœci. Oczywiœcie nie ka¿da zmiana wi¹¿e siê~z~samym uczeniem. Dlatego kolejnym kluczowym elementem jest \emph{poprawa}, czyli zmiana przynosz¹ca korzyœæ. Precyzuj¹c, chodzi~o~zmiany pozwalaj¹ce usprawniæ system~w~jego dzia³aniu. O tym co stanowi takie usprawnienie decyduje konstruktor takiego systemu, który wyposa¿a go~w~odpowiedni mechanizm oceny stopnia poprawy takiej zmiany. Ostatnim, równie wa¿nym elementem jest \emph{autonomicznoœæ} korzystnych zmian zachodz¹cych~w~systemie. System sam jest~w~stanie zmieniaæ siê na lepsze, tak jak cz³owiek sam jest~w~stanie nauczyæ siê wielu umiejêtnoœci. O takich zmianach bêdziemy mówiæ jako o~\emph{doœwiadczeniu} zdobywanemu przez system. Nasze rozwa¿ania prowadz¹ do definicji\cite{Cich07}:
+
+\newtheorem{definition}{Definicja}[chapter]
+\begin{definition}
+\label{def:definicjaUczenia}
+Uczeniem siê systemu jest ka¿da autonomiczna zmiana~w~systemie zachodz¹ca na podstawie doœwiadczeñ, która prowadzi do poprawy jakoœci jej dzia³ania.
+\end{definition}
+
+Sama definicja dosyæ jasno precyzuje kiedy sam proces mo¿emy nazwaæ uczeniem. Jednak¿e ocena autonomicznoœci oraz faktycznej poprawy czêsto nie jest ³atwym zadaniem~i~zale¿y od samego projektanta systemu. Trafne decyzje prowadz¹ do systemu, który faktycznie~w~myœl naszej definicji potrafi siê uczyæ~i~wykorzystywaæ nabyte doœwiadczenie. Poni¿ej znajduj¹ siê inne podobne definicje, które pojawi³y siê na przestrzeni ostatnich lat.
+
+\begin{description}
+\item[Herbert Simon (1983)~\cite{Sim83}] Uczenie siê oznacza zmiany~w~systemie, które maj¹ charakter adaptacyjny~w~tym sensie, ¿e pozwalaj¹ systemowi wykonaæ za nastêpnym razem takie same zadanie lub zadania podobne bardziej efektywnie.
+\item[Ryszard Michalski (1986)~\cite{Mi86}] Uczenie siê to konstruowanie~i~zmiana reprezentacji doœwiadczanych faktów.~W~ocenie konstruowania reprezentacji bierze siê pod uwagê: wiarygodnoœæ – okreœla stopieñ~w~jakim reprezentacji odpowiada rzeczywistoœci, efektywnoœæ – charakteryzuje przydatnoœæ reprezentacji do osi¹gania danego celu, poziom abstrakcji – odpowiada zakresowi szczegó³owoœci~i~precyzji pojêæ u¿ywanych~w~reprezentacji; okreœla on tzw. moc opisow¹ reprezentacji. Reprezentacja jest rozumiana jako np. opisy symboliczne, algorytmy, modele symulacyjne, plany, obrazy.
+\item[Donald Michie (1991)~\cite{Michi91}] System ucz¹cy siê wykorzystuje zewnêtrzne dane empiryczne~w~celu tworzenia~i~aktualizacji podstaw dla udoskonalonego dzia³ania na podobnych danych~w~przysz³oœci oraz wyra¿ania tych podstaw~w~zrozumia³ej~i~symbolicznej postaci.
+\end{description}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Zastosowanie uczenia maszynowego}
+\label{sec:zastosowanieUczeniaMaszynowego}
+
+Zanim przejdziemy do dalszych rozwa¿añ ju¿ œciœlej powi¹zanych~z~programami ucz¹cymi siê, przeanalizujemy kilka problemów, którym sprosta³yby takie programy:
+\begin{description}
+\item[Rozpoznawanie mowy] Wiêkszoœæ systemów rozpoznawania mowy wykorzystuje uczenie maszynowe. Przyk³adem takiej udanej realizacji mo¿e byæ system~SPHINX~\cite{Lee89}. System ten potrafi nauczyæ siê strategii specyficznej dla konkretnego rozmówcy do rozpoznawania podstawowych dŸwiêków i~s³ów za pomoc¹ sieci neuronowych. Wykorzystuje strumienie~audio~(np.~przemowa) jako dane treningowe. Podobnie jak w~opisanym przyk³adzie równie¿~w~innych systemach mo¿na zastosowaæ ró¿ne algorytmy uczenia maszynowe takie jak sieci neuronowe~w~problemie rozpoznawania sygna³ów dŸwiêkowych.
+\item[Prowadzenie pojazdów przez automaty] Uczenie maszynowe sukcesywnie jest u¿ywane~w~pojazdach sterowanych komputerowo. Przyk³adowo, system~ALVINN~\cite{Pom89} u¿ywa³ wyuczonych strategii~w~70 milowym kursie pojazdu autonomicznego po drogach publicznych wœród samochodów podró¿uj¹cych~w~naturalny sposób. Podobnie mo¿na rozwi¹zaæ wiele innych problemów bazuj¹cych na wykorzystaniu sztucznych zmys³ów takich jak sensory.
+\item[Badanie astronomicznych struktur] Metody uczenia maszynowego stosowane s¹ do ogromnych baz danych~w~celu odnalezienia regularnoœci~w~zbiorze danych. Jednym~z~przyk³adów wykorzystania~w~ten sposób metod uczenia maszynowego s¹ algorytmy uczenia drzew decyzyjnych stworzone przez NASA. Celem NASA by³o nauczenie systemu klasyfikowania cia³ niebieskich~z~drugiego obserwatorium Palomar~w~projekcie Sky~Survey~\cite{Fay95}. System ten jest aktualnie u¿ywany do automatycznego klasyfikowania wszystkich obiektów~w~projekcie Sky~Survey, które ³¹cznie zajmuj¹ kilka terabajtów danych~w~postaci obrazów.
+\item[Gry planszowe, logiczne] Istnieje wiele algorytmów opartych~o~metody uczenia maszynowego, potrafi¹cych wygrywaæ~z~cz³owiekiem. Takim przyk³adem mo¿e byæ gra Backgammon~i~program TD-GAMMON~\cite{Tes92}\cite{Tes95}. Program uczy³ siê na podstawie ponad miliona gier przeprowadzonych przeciwko samemu sobie, osi¹gaj¹c poziom graczy~z~najwy¿szej pó³ki. Podobne efekty mo¿na uzyskaæ~w~wielu innych grach takich jak szachy, warcaby~i~wiele innych.
+\end{description}
+
+Jest to tylko kilka przyk³adów mo¿liwych zastosowañ dla systemów uczenia maszynowego. Warto~w~tym momencie przeanalizowaæ rozpiêtoœæ samej dziedziny, która wykorzystuje wiele ró¿nych obszarów~w~swoich praktycznych jak~i~teoretycznych rozwa¿aniach:
+\begin{itemize}
+\item Sztuczna inteligencja,
+\item Twierdzenie Bayesa,
+\item Teoria z³o¿onoœci obliczeniowej,
+\item Teoria sterowania,
+\item Teoria informacji,
+\item Logika formalna,
+\item Filozofia,
+\item Psychologia~i~neurofizjologia,
+\item Statystyka,
+\item Teoria prawdopodobieñstwa.
+\end{itemize}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Programy ucz¹ce siê}
+\label{sec:programyUczaceSie}
+
+Aktualnie posiadamy ju¿ pewne wyobra¿enie czym jest uczenie siê poparte definicj¹~\ref{def:definicjaUczenia}. Sam program ucz¹cy mo¿emy okreœliæ jako pewny \emph{parametryzowany} algorytm wykonywania konkretnego zadania~\cite{Cich07}. Uczenie~w~naszym programie polega na zdefiniowanego pewnego zbioru parametrów pozwalaj¹cych~w~sposób najefektywniejszy zrealizowaæ podane zadanie. Idee mo¿na zobaczyæ na rysunku~\ref{rys:algorytmParametryzowany}. Wyuczone parametry nazywamy \emph{wiedz¹} lub \emph{umiejêtnoœci¹}. Ze wzglêdu na autonomicznoœæ procesu uczenia siê nazywa siê je czêsto \emph{hipotez¹}, pochodz¹c¹~z~pewnego zbioru przestrzeni hipotez, które uczeñ mo¿e wykorzystaæ do rozwi¹zania zadania~\cite{Cich07}.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics[width=.9\textwidth]{algorytmParametryzowany.png}}
+    \caption{Algorytm parametryzowany~\cite{Cich07}}
+    \label{rys:algorytmParametryzowany}
+    \end{center}
+\end{figure}
+
+Reasumuj¹c, definicja~\ref{def:definicjaUczenia} okreœla nam zmianê parametrów jako wp³ywaj¹c¹ na poprawê dzia³ania systemu~w~sposób autonomiczny, podlegaj¹c¹ procesowi uzupe³niania, korygowania~i~doskonalenia. Do zadañ takiego systemu nale¿y miêdzy innymi~\cite{BolZar93}:
+\begin{itemize}
+\item "formu³owanie nowych pojêæ,
+\item wykrywanie nieznanych dotychczas prawid³owoœci~w~danych,
+\item tworzenie regu³ decyzyjnych,
+\item przyswajanie nowych pojêæ~i~struktur drog¹ uogólnienia przyk³adów~i~analogii,
+\item modyfikowanie, uogólnianie~i~precyzowanie danych,
+\item zdobywanie wiedzy drog¹ konwersacji~z~ludŸmi,
+\item uogólnianie obserwacji dokonanych sztucznymi zmys³ami,
+\item generowanie wiedzy zrozumia³ej dla cz³owieka."
+\end{itemize}
+
+Docelowo zdolnoœæ do samodzielnego wnioskowania, jak¹ posiada cz³owiek, jest tym co chcemy osi¹gn¹æ~w~programie ucz¹cym siê. Dodatkowo, chcemy aby komputery unika³y b³êdów charakterystycznych dla ludzi, które wynikaj¹~z~ró¿nych s³aboœci cz³owieka jak np. zapominanie pewnych faktów niezbêdnych do podjêcia w³aœciwej decyzji. Sam program powinien byæ uniezale¿niony od œrodowiska zewnêtrznego. Jednak¿e, aby osi¹gn¹æ taki stan musimy wyposa¿yæ program~w~pocz¹tkow¹ wiedzê poprzez dostarczenie odpowiedniej iloœci danych. Pozwoli to na ocenê dzia³ania programu~i~na pod¹¿anie we w³aœciwym kierunku. Oczywiœcie bierzemy pod uwagê pewn¹ œcis³¹ dziedzinê, aby nasze za³o¿enia by³y realne~\cite{BolZar93}. Tak zdefiniowane programy postaramy siê opisaæ ju¿ na konkretnych przypadkach wraz~z~dok³adniejszym omówieniem~w~dalszych rozwa¿aniach.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Taksonomia uczenia maszynowego}
+\label{sec:taksonomiaUczenia}
+
+Postaramy siê teraz ukazaæ faktyczny podzia³ uczenia siê ze wzglêdu na ró¿ne kryteria klasyfikacji oraz wynikaj¹cy~z~nich podzia³ dziedziny na bardziej szczegó³owe obszary. Wœród wspomnianych kryteriów najbardziej znacz¹ce s¹~\cite{Cich07}:
+\begin{description}
+\item[Metoda reprezentacji wiedzy lub umiejêtnoœci] Wiele~w~tym przypadku zale¿y od samej dziedziny zastosowania projektowanego systemu ucz¹cego siê. Aby mo¿liwe by³o efektywne operowanie na danych~z~dziedziny istnieje potrzeba wyboru pewnej reprezentacji danych, która maksymalizuje swoje zalety~i~minimalizuje wady~w~perspektywie tej dziedziny. Mo¿emy tutaj wyró¿niæ kilka~z~istniej¹cych metod, takie jak drzewa decyzyjne, regu³y, rozk³ad prawdopodobieñstw czy automaty skoñczone.~W~zale¿noœci od wyboru mamy równie¿ ró¿ny stopieñ czytelnoœci danej reprezentacji dla cz³owieka, co te¿ jest pewnym czynnikiem wyboru~\cite{Mi83}\cite{Cich07}.~W~pracy skupimy siê na dwóch metodach reprezentacji. Szczegó³owo na drzewach decyzyjnych oraz wspomnimy o regu³ach, które w pewien sposób s¹ powi¹zane z struktur¹ drzew decyzyjnych.
+\item[Sposób u¿ywania wiedzy lub umiejêtnoœci] Sposób u¿ywania wiedzy zale¿y bezpoœrednio od wybranej metody reprezentacji wiedzy jak~i~przeznaczeniu wiedzy co jest powi¹zane~z~zadaniem stawianym przed systemem. Najbardziej typowymi zadaniami s¹ klasyfikacja~i~aproksymacja. Celem klasyfikacji jest ustalenie przynale¿noœci pewnego bytu do konkretnej kategorii, natomiast celem aproksymacji jest odwzorowanie bytu na zbiór liczb rzeczywistych\cite{Cich07}.~W~naszych rozwa¿aniach skupiamy siê tylko~i~wy³¹cznie na klasyfikacji która okreœla cel postawiony~w~naszym problemie.
+\item[ród³o~i~postaæ informacji trenuj¹cej]~W~tej czêœci podzia³ jest stosunkowo prosty. Uczenie dzielimy na uczenie nadzorowane (ang.~\emph{superviesed~learning}) oraz na uczenie nienadzorowane (ang.~\emph{unsupervised~learning}). Tak jak widaæ na rysunku~\ref{rys:zrodloInformacjiTrenujacej}, proces ten polega na przetworzeniu pewnych danych wejœciowych~i~wytworzeniu odpowiednich danych wyjœciowych. Samo uczenie okreœla algorytm, który przetwarza dane, wytwarzaj¹c oczekiwany rezultat. Dla \emph{uczenia nadzorowanego} Ÿród³em informacji trenuj¹cej jest \emph{nauczyciel}, który okreœla w³aœciwe zachowania dla poszczególnych danych. Natomiast dla \emph{uczenia nienadzorowanego} informacja taka jest niedostêpna~i~uczeñ sam przetwarza dane decyduj¹c~o~tym, jak nale¿y to robiæ\cite{Cich07}. Uczenie bez nadzoru jest stosowane g³ównie~w~metodzie uczenia maszynowego nazywanej grupowaniem, która wykracza poza temat pracy. Natomiast uczenie nadzorowane bêdzie towarzyszy³o nam do samego koñca pracy.
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics[width=.7\textwidth]{uczenZrodloInformacjiTrenujacej.png}}
+    \caption{ród³o informacji trenuj¹cej~\cite{Cich07}}
+    \label{rys:zrodloInformacjiTrenujacej}
+    \end{center}
+\end{figure}
+
+\item[Mechanizm nabywania~i~doskonalenia wiedzy lub umiejêtnoœci] Zdecydowanie najczêœciej stosowanym mechanizmem jest indukcja. Polega ona na uogólnianiu informacji trenuj¹cej~w~celu uzyskania uogólnionej wiedzy.~Z~drugiej strony mamy mechanizmy uczenia nieindukcyjnego.~W~tym przypadku celem jest konkretyzacja wiedzy ucznia na podstawie uogólnionej trenuj¹cej informacji~\cite{Cich07}.~W~naszej pracy bêdziemy siê skupiaæ na mechanizmie indukcji.
+
+\end{description}
+
+%---------------------------------------------------------------------------
+
+\section{Indukcyjne uczenie siê }
+\label{sec:indukcyjneUczenie}
+
+Ca³y podrozdzia³ jest poœwiêcony uczeniu siê~w~oparciu~o~wnioskowanie indukcyjne. Jednoczeœnie rozdzia³ ten jest wstêpem do dalszych rozwa¿añ~o~praktycznych algorytmach, które maj¹ zastosowanie~w~rozwi¹zywaniu problemów klasyfikacji.~W~podrozdziale zostanie opisana istota indukcyjnych mechanizmów wnioskowania, która prowadzi do wyszukiwania hipotez najlepiej wyjaœniaj¹cych~i~uogólniaj¹cych obserwowane fakty, które~w~tym przypadku nazywane s¹ przyk³adami. Rozdzia³ ten zosta³ stworzony na podstawie drugiego rozdzia³u ksi¹¿ki Paw³a Cichosza~\cite{Cich07}. 
+
+
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Wnioskowanie indukcyjne}
+\label{sec:wnioskowanieIndukcyjne}
+
+Pierwsze wzmianki na temat indukcyjnego uczenia siê mo¿na znaleŸæ w pionierskich badaniach Hunta, Marina i Stone'a~\cite{Hun66} z lat szeœædziesi¹tych. Wnioskowanie indukcyjne mo¿na okreœliæ jako stosowanie wstecz nastêpuj¹cej regu³y logicznej konsekwencji~\cite{Cich07}:
+\begin{equation}
+ P \wedge~W~\models K,
+\end{equation}
+w której kolejne symbole oznaczaj¹: W~-~wiedza wrodzona ucznia, która mo¿e byæ pusta,~K~-~otrzymana~informacja trenuj¹ca oraz P~-~wiedza powsta³a~w~wyniku procesu uczenia siê. Zarówno jak~w~ksi¹¿ce~\cite{Cich07} przyjmiemy pewne wygodne za³o¿enia. Bêdziemy oznaczaæ K jako T, czyli informacja \emph{trenuj¹ca} oraz zamiast P bêdziemy pisaæ h~w~celu oznaczenia hipotezy otrzymanej przez ucznia. Po naszych zmianach, regu³a logiczna wygl¹da nastêpuj¹co:
+\begin{equation}
+ h \wedge~W~\models T.
+\end{equation}
+Mo¿na zatem stwierdziæ, ¿e informacja trenuj¹ca zdobyta przez ucznia jest logiczn¹ konsekwencj¹ jego wiedzy wrodzonej~W~oraz wygenerowanej przez niego hipotezy h. Innymi s³owy, informacja trenuj¹ca zosta³a wyjaœniona dziêki wrodzonej wiedzy ucznia oraz dziêki indukcyjnej hipotezie. Zak³adamy oczywiœcie ¿e powy¿sze za³o¿enie jest prawdziwe jak~i~jego wynik gdy wiedza wrodzona, hipoteza~i~informacja trenuj¹ca s¹ poprawne. Niestety~w~praktycznych zastosowaniach czêsto nale¿y pójœæ na pewne ustêpstwa~i~zgodziæ siê na przybli¿on¹ konsekwencjê~\cite{Cich07}.
+
+Znalezienie poprawnej hipotezy polega na wykryciu~w~informacji trenuj¹cej pewnych prawid³owoœci, które wraz~z~wiedz¹ wrodzon¹ pozwalaj¹ je~w~okreœlony sposób wyt³umaczyæ. Prowadzi to do przedstawienia wnioskowania indukcyjnego jako przechodzenia od faktów~i~obserwacji jednostkowych, które~w~uczeniu siê nazywamy przyk³adami trenuj¹cymi, do uogólnieñ czyli pewnej hipotezy stanowi¹cej uogólnienie przyk³adów trenuj¹cych~\cite{Cich07}. Hipoteza oprócz g³ównego celu jakim jest poprawne lub~w~przybli¿eniu poprawne wyjaœnianie informacji trenuj¹cej powinna prowadziæ przede wszystkim do predykcji, czyli do przewidywania nowych faktów~i~obserwacji.~W~tym momencie mo¿na wyró¿niæ trzy podstawowe odmiany indukcyjnego uczenia siê: uczenie siê pojêæ, tworzenie pojêæ oraz uczenie siê aproksymacji~\cite{Cich07}. Tak jak wczeœniej wspominaliœmy,~w~samej pracy skupiamy siê tylko na uczeniu siê pojêæ czyli sposobie klasyfikacji. Reszta odmian indukcyjnego uczenia siê wykracza poza zakres pracy.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Uczenie siê pojêæ}
+\label{sec:uczenieSiePojec}
+
+W indukcyjnym uczeniu siê, pozyskiwana przez ucznia wiedza stanowi pewne odwzorowanie otrzymanej informacji wejœciowej na pewien zbiór wartoœci wyjœciowych. Informacje wejœciow¹ s¹ opisy obiektów pewnej dziedziny. Nasze rozwa¿ania~w~tym podrozdziale zaczniemy od zdefiniowania, jak¹ postaæ takie opisy mog¹ przyjmowaæ. 
+
+\begin{quotation}
+Definicje zosta³y zaczerpniête z ksi¹¿ki Paw³a Cichosza~\cite{Cich07}:
+
+\begin{description}
+\item[Dziedzina.] Dziedzin¹ nazywaæ bêdziemy zbiór obiektów oznaczany jako $X$, których dotyczyæ ma wiedza nabywana przez ucznia. Mog¹ to byæ osoby, sytuacje, stany rzeczy oraz cokolwiek innego, co stanowi argument odwzorowania, którego nauczyæ siê ma uczeñ~\cite{Cich07}.
+\item[Przyk³ady.] Ka¿dy obiekt, element dziedziny $x \in X$, bêdziemy nazywaæ przyk³adem~\cite{Cich07}.
+\item[Atrybuty.] Bêdziemy zak³adaæ, ¿e przyk³ady s¹ opisywane za pomoc¹ atrybutów. Atrybutem bêdziemy nazywaæ dowoln¹ funkcjê okreœlon¹ na dziedzinie. Przyjmujemy, ¿e opis ka¿dego przyk³adu $x \in X$ sk³ada siê~z~wartoœci $n \geq 1$ atrybutów, $a_{1} \colon X \mapsto A_{1}, a_{2} \colon X \mapsto A_{2}, \dots, a_{n} \colon X \mapsto A_{n}$. Zbiór wszystkich okreœlonych na rozwa¿anej dziedzinie atrybutów bêdziemy oznaczaæ przez $\mathbb{A} = \{a_{1},a_{2},\dots,a_{n}\}$~i~nazywaæ zestawem lub \emph{przestrzeni¹ atrybutów}.~W~praktyce czasem uto¿samia siê przyk³ad $x$~z~wektorem wartoœci jego atrybutów $\langle a_{1}(x),a_{2}(x),\dots,a_{n}(x) \rangle$, czyli przyk³adem nazywa siê dowolny element iloczynu kartezjañskiego przeciwdziedzin atrybutów $A_{1} \times A_{2} \times \dots \times A_{n}$.~W~zale¿noœci od przeciwdziedziny (zbioru wartoœci) atrybuty dzieli siê na kilka typów:
+
+\begin{itemize}
+\item \textbf{nominalne}:~o~skoñczonym zbiorze nieuporz¹dkowanych wartoœci dyskretnych,
+\item \textbf{porz¹dkowe}:~o~przeliczalnym zbiorze uporz¹dkowanych wartoœci dyskretnych,
+\item \textbf{ci¹g³e}:~o~wartoœciach ze zbioru liczb rzeczywistych.
+\end{itemize}
+\end{description}
+
+Dla dowolnego zbioru przyk³adów $P \subseteq X$, atrybutu $a \colon X \mapsto A$~i~jego wartoœci $v \in A$ oznaczamy przez $P_{av}$ zbiór tych przyk³adów~z~$P$, dla których atrybut $a$ ma wartoœæ $v$, czyli $P_{av} = \{x \in P\ |\ a(x) = v\}$~\cite{Cich07}.
+
+\end{quotation}
+
+\begin{sample}
+\label{prz:Pogoda}
+Dziedzin¹ naszych rozwa¿añ bêd¹ stany pogody. Ka¿dy obiekt dziedziny bêdzie zawiera³ atrybuty~\cite{Cich07}:
+\begin{description}
+\item[aura] atrybut nominalny, wartoœci: s³oneczna, pochmurna, deszczowa,
+\item[temperatura] atrybut porz¹dkowy, wartoœci: zimna umiarkowana, ciep³a,
+\item[wilgotnoœæ] atrybut porz¹dkowy, wartoœci: normalna, du¿a,
+\item[wiatr] atrybut porz¹dkowy, wartoœci: s³aby, silny.
+\end{description}
+\end{sample}
+
+Pojêcia to jeden ze sposobów opisu wiedzy~o~œwiecie. U¿ywamy ich do opisywania oraz interpretowania zmys³owych obserwacji~i~abstrakcyjnych idei. Przyk³adowo, pojêcie samochodu osobowego pozwala rozró¿niaæ nam osobowe modele poœród innych pojazdów, takich jak ciê¿arówki, motocykle czy rowery. Mo¿emy sobie równie¿ wyobraziæ wiele innych pojêæ towarzysz¹cych nam na co dzieñ, które pozwalaj¹ nam klasyfikowaæ obiekty~z~tej samej dziedziny~\cite{Cich07}.
+
+W najprostszym przypadku pojêcie mo¿na zdefiniowaæ jako podzia³ zbioru wszystkich obiektów~z~danej dziedziny na dwie kategorie: obiekty nale¿¹ce do danego pojêcia oraz te, które do niego nie nale¿¹. Jednak¿e zdecydowanie czêœciej stosowane jest \emph{pojêcie~wielokrotne}. Pojêcie wielokrotne dzieli dziedzinê na wiele kategorii,~z~których ka¿da odpowiada jednemu~z~pojêæ pojedynczych~\cite{Cich07}.~W~dalszej czêœci pracy bêdziemy traktowaæ poszczególne pojêcia jako funkcje przekszta³caj¹ce dziedzinê~w~zbiór kategorii. Dodatkowo, bêdziemy mówiæ, ¿e pojêcie przypisuje \emph{etykietê} kategorii danemu obiektowi~\cite{Cich07}.
+
+Przyk³ady trenuj¹ce s¹ z³o¿one~z~dwóch czêœci: opis obiektu oraz etykieta kategorii. Przyk³adem \emph{nieetykietowanym} bêdziemy nazywaæ przyk³ad, który posiada sam opis obiektu. Natomiast poprzez dodanie do przyk³adu nieetykietowanego etykiety kategorii otrzymujemy przyk³ad etykietowany. Wówczas, celem ucznia bêdzie znalezienie odpowiedniej etykiety dla przyk³adu nieetykietowanego na podstawie wiedzy wrodzonej~i~otrzymanej informacji trenuj¹cej. Same przyk³ady trenuj¹ce bêd¹ oczywiœcie przyk³adami etykietowanymi, dostarczaj¹c pe³nej informacji na temat przyk³adów~\cite{Cich07}.
+
+\begin{quotation}
+Definicje zosta³y zaczerpniête z ksi¹¿ki Paw³a Cichosza~\cite{Cich07}: \\
+
+\textbf{Pojêcia.} Zak³adamy, ¿e na dziedzinie mo¿e byæ okreœlona pewna klasa pojêæ, oznaczana przez~$\mathbb{C}$. Ka¿de pojêcie $c \in \mathbb{C}$ jest funkcj¹ $c \colon X \mapsto C$, przy czym~$C$~oznacza skoñczony zbiór kategorii pojêæ klasy~$\mathbb{C}$.~W~przypadku pojêæ pojedynczych bêdziemy przyjmowaæ $C = \{0,1\}$.~W~przypadku pojêæ wielokrotnych~$C$~mo¿e byæ dowolnym skoñczonym zbiorem kategorii~o~licznoœci $|C| > 2$. Pojêcie pojedyncze wyznacza podzbiór dziedziny, zawieraj¹cy przyk³ady pozytywne tego pojêcia: $X^{C} = \{x \in X\ |\ c(x) = 1\}$. Pozosta³e elementy dziedziny s¹ przyk³adami negatywnymi pojêcia.~W~ogólnym przypadku dla kategorii $d \in C$, pewnego pojêcia~$c$~i~dowolnego zbioru przyk³adów $P \subseteq X$ przyjmujemy oznaczenie~$P^{cd}$~dla tych przyk³adów~z~$P$, które nale¿¹ do kategorii~$d$, czyli $P^{cd} = \{x \in P\ |\ c(x) = d\}$. Mo¿liwe jest te¿ za³o¿enie, ¿e~$c$~jest ustalonym pojêciem docelowym.~W~tym przypadku pomijamy~$c$~i~piszemy $P^{d}$~\cite{Cich07}.
+
+\begin{sample}
+Dla dziedziny stanów pogody z przyk³adu~\ref{prz:Pogoda} rozwa¿my klasê pojêæ~$\mathbb{C}$~z³o¿on¹ ze wszystkich mo¿liwych pojêæ pojedynczych. Przyk³adowym pojêciem mo¿e byæ s³oneczny, ciep³y dzieñ~o~du¿ej wilgotnoœci~i~s³abym wietrze.
+\end{sample}
+
+\textbf{Hipotezy do uczenia siê pojêæ.} Dla danej dziedziny i klasy pojêæ jest okreœlona, zale¿na od stosowanego algorytmu uczenia siê, przestrzeñ mo¿liwych hipotez, któr¹ bêdziemy oznaczaæ~$\mathbb{H}$. Przestrzeñ hipotez zawiera wszystkie hipotezy, jakie mo¿e skonstruowaæ uczeñ. Ka¿da hipoteza $h \in \mathbb{H}$, podobnie jak ka¿de pojêcie, jest funkcj¹ przypisuj¹c¹ przyk³adom ich kategorie,~a~wiêc mo¿emy zapisaæ $h\colon X \mapsto C$. Wynikiem uczenia siê pojêæ jest zawsze wybór pewnej hipotezy z przestrzeni~$\mathbb{H}$, uznanej przez ucznia za najlepsz¹ na podstawie przyk³adów trenuj¹cych i ewentualnie wiedzy wrodzonej. Dok³adne nauczenie siê ka¿dego pojêcia docelowego $c \in \mathbb{C}$ jest mo¿liwe tylko pod warunkiem, ¿e $\mathbb{C} \subseteq \mathbb{H}$. Wówczas wiadomo, ¿e $c \in \mathbb{H}$, czyli przestrzeñ hipotez zawiera hipotezê identyczn¹ z pojêciem docelowym. W praktyce dla niektórych algorytmów zachodzi niestety $\mathbb{H} \subset \mathbb{C}$~i~wtedy nie ma pewnoœci, ¿e uda siê dok³adnie nauczyæ siê pojêcia docelowego~\cite{Cich07}.
+
+W przypadku hipotez dla pojedynczych pojêæ, bêdziemy mówiæ, ¿e hipoteza \emph{pokrywa} przyk³ad jeœli zosta³ sklasyfikowany jako przyk³ad pozytywny, oraz dla przyk³adu negatywnego bêdziemy mówiæ ¿e hipoteza \emph{nie pokrywa} danego przyk³adu. Przez $P^{h}$ mo¿emy oznaczyæ wówczas zbiór przyk³adów~z~$P$~pokrywanych przez hipotezê~$h$.~W~ogólnym przypadku dla hipotezy $h\colon X \mapsto C$ przyjmujemy oznaczenie $P^{hd}$ dla zbioru przyk³adów~z~$P$, którym hipoteza~$h$~przypisuje kategoriê $d \in C$~\cite{Cich07}.
+
+\begin{sample}
+Dla dziedziny z przyk³adu~\ref{prz:Pogoda} rozwa¿my przestrzeñ hipotez~$\mathbb{H}$~zawieraj¹c¹ wszystkie hipotezy, które mog¹ byæ reprezentowane przez funkcje odwzorowuj¹ce wartoœci atrybutów, $|\mathbb{H}| = 2^{3*3*2*2} = 68719476736$.~W~tym przypadku najbardziej naturalne wydaje siê przyjêcie, ¿e dziedzina jest nieskoñczona.~Z~tego wynika nam, ¿e $\mathbb{H} \subset \mathbb{C}$.
+\end{sample}
+
+\textbf{Zapytania do uczenia siê pojêæ.} Ka¿da hipoteza bêd¹ca rezultatem procesu uczenia siê pojêæ mo¿e byæ zastosowana do klasyfikowania przyk³adów z dziedziny. \emph{Zapytaniem} nazywamy zg³oszenie przyk³adu, dla którego za pomoc¹ danej hipotezy nale¿y wyznaczyæ kategoriê. Klasyfikacja tego przyk³adu jest odpowiadaniem na zapytanie zadane uczniowi, który na podstawie najlepszej jego zdaniem hipotezy klasyfikuje przyk³ady~\cite{Cich07}.
+
+\textbf{Informacja trenuj¹ca do uczenia siê pojêæ.} Przyk³adem etykietowanym pojêcia~$c$~ okreœlonego na dziedzinie~$x$~bêdziemy nazywaæ parê z³o¿on¹ z nieetykietowanego przyk³adu $x \in X$~i~jego kategorii, któr¹ zapisujemy $\langle x,c(x) \rangle$. Zbiorem trenuj¹cym do uczenia siê pojêcia docelowego~$c$~nazwiemy dowolny zbiór etykietowanych przyk³adów tego pojêcia dostarczony uczniowi przez nauczyciela, opisanych za pomoc¹ atrybutów okreœlonych na dziedzinie. Dla tak rozumianego zbioru trenuj¹cego bêdziemy stosowaæ oznaczenie $\langle T \rangle^{c}_{\mathbb{A}}$~i~definiowaæ go~w~formalnie œcis³y sposób nastêpuj¹co~\cite{Cich07}:
+\begin{equation}
+ \langle T \rangle^{c}_{\mathbb{A}} = \{\langle\langle x\rangle_{\mathbb{A}}, c(x)\rangle\ |\ x\ \in\ T\ \subseteq\ X\}.
+\end{equation}
+W dalszej czêœci pracy bêdziemy zak³adaæ, ¿e zbiór trenuj¹cy~$T$~zawiera przyk³ady~w~postaci wektorów wartoœci atrybutów,~a~etykiety kategorii s¹ równie¿ dostêpne.
+
+\begin{sample}
+Dla dziedziny stanów pogody z przyk³adu~\ref{prz:Pogoda} zbiór trenuj¹cy dla pewnego pojêcia docelowego przedstawia tabela~\ref{tab:zbiorTrenujacyPogoda}~\cite{Quin86}. Zbiór danych przedstawiony w tej tabeli pos³u¿y nam wielokrotnie przy omawianiu konkretnych algorytmów uczenia maszynowego~i~przy analizie ich dzia³ania. Pojêcie okreœla, czy warunki pogodowe s¹ odpowiednie do gry w golfa. Pojêcie zawiera 9 pozytywnych i 5 negatywnych przyk³adów.
+\end{sample}
+
+\textbf{Niepoprawne dane trenuj¹ce.} Problemem,~o~którym ju¿ wczeœniej wspominaliœmy s¹ niepoprawne dane trenuj¹ce. Nieprawid³owoœci mog¹ objawiaæ siê zarówno w opisie obiektu jako nieprawdziwe atrybuty lub w postaci Ÿle przypisanej etykiecie kategorii. Niepoprawne dane trenuj¹ce maj¹ ró¿ny wp³yw na ró¿ne algorytmy. Warto zauwa¿yæ, ¿e podstawowa definicja zbioru trenuj¹cego zak³ada jego pe³n¹ poprawnoœæ. O zbiorach trenuj¹cych zawieraj¹cych nieprawid³owe dane bêdziemy mówiæ, ¿e s¹ \emph{zaszumione}~\cite{Cich07}.
+
+\textbf{B³¹d w uczeniu siê pojêæ.} B³¹d w uczeniu siê pojêæ charakteryzuje stopieñ zgodnoœci klasyfikacji przyk³adów przez pojêcie docelowe i hipotezê ucznia. Porównuj¹c hipotezê~$h$~z~pojêciem docelowym~$c$~na pewnym zbiorze przyk³adów $P \subseteq X$ mo¿emy oszacowaæ jej \emph{b³¹d próbki} jako stosunek liczby niepoprawnie klasyfikowanych przyk³adów~z~tego zbioru do liczby wszystkich jego elementów:
+\begin{equation}
+ 	e^{c}_{P}(h) = \frac{|\{x\ \in\ P\ |\ h(x)\ \neq\ c(x)\}|}{|P|}.
+\end{equation}
+
+Wygodnie równie¿ bêdzie pos³ugiwaæ siê poni¿szym wzorem dla licznika powy¿szego u³amka, czyli liczby pomy³ek hipotezy~$h$~wzglêdem pojêcia~$c$~na zbiorze~$P$:
+\begin{equation}
+	r^{c}_{P}(h) = |\{x\ \in\ P\ |\ h(x)\ \neq\ c(x)\}|.
+\end{equation}
+
+Zdecydowanie bardziej interesuj¹ca dla nas jest wartoœæ \emph{b³êdu rzeczywistego} hipotezy, który mo¿na interpretowaæ jako oczekiwany b³¹d próbki na losowo wybranym zbiorze przyk³adów. Zak³adaj¹c, ¿e przyk³ady s¹ wybierane~z~dziedziny zgodnie z okreœlonym na niej pewnym rozk³adem prawdopodobieñstwa~$\Omega$, definicjê b³êdu rzeczywistego mo¿na zapisaæ nastêpuj¹co:
+\begin{equation}
+ e^{c}_{\Omega}(h) = Pr_{x \in \Omega}(h(x) \neq c(x)),
+\end{equation}
+przy czym $Pr_{x \in \Omega}$ oznacza prawdopodobieñstwo przy za³o¿eniu wylosowania~$x$~ze zbioru~$X$~zgodnie~z~rozk³adem~$\Omega$~\cite{Cich07}.
+
+\textbf{Zadanie indukcyjnego uczenia siê pojêæ.} Zak³adamy, ¿e dane s¹ dziedzina~$X$, klasa pojêæ~$\mathbb{C}$~i~przestrzeñ hipotez ucznia~$\mathbb{H}$~oraz jest ustalone nieznane pojêcie docelowe $c \in \mathbb{C}$. Uczeñ, maj¹c dany zbiór trenuj¹cy $T \subseteq X$ dla pojêcia~$c$, ma znaleŸæ hipotezê $h \in \mathbb{H}$, która jest najlepszym przybli¿eniem pojêcia docelowego~$c$~wed³ug pewnego kryterium. Kryterium to na ogó³ uwzglêdnia minimalizacjê b³êdu próbki na zbiorze trenuj¹cym $e^{c}_{T}(h)$, ale czêsto nie ogranicza siê do niej. Jeœli dany jest tak¿e pewien rozk³ad prawdopodobieñstwa~$\Omega$~na dziedzinie~$X$~i~zbiór trenuj¹cy zawiera przyk³ady wybrane zgodnie~z~tym rozk³adem, to po¿¹dany jest wybór hipotezy $h \in \mathbb{H}$ minimalizuj¹cej b³¹d rzeczywisty $e^{c}_{\Omega}(h)$.~W~przypadku idealnym dok³adnego uczenia siê hipoteza jest identyczna~z~pojêciem docelowym, czyli $(\forall x \in X)\ h(x) = c(x)$~\cite{Cich07}.
+
+\end{quotation}
+
+\begin{table}[!htbp]
+\caption{Zbiór trenuj¹cy dla dziedziny stanów pogody~\cite{Cich07}}
+\label{tab:zbiorTrenujacyPogoda}
+\begin{center}
+
+	\begin{tabular}{| c || l | l | l | l || c |}
+	\hline 
+	x & aura 		& temperatura	& wilgotnoœæ 	& wiatr & c(x) \\ \hline \hline
+	1 & s³oneczna 	& ciep³a 		& du¿a 			& s³aby & 0 \\ \hline
+	2 & s³oneczna 	& ciep³a 		& du¿a 			& silny & 0 \\ \hline
+	3 & pochmurna 	& ciep³a 		& du¿a 			& s³aby & 1 \\ \hline
+	4 & deszczowa 	& umiarkowana 	& du¿a 			& s³aby & 1 \\ \hline
+	5 & deszczowa 	& zimna 			& normalna 		& s³aby & 1 \\ \hline
+	6 & deszczowa 	& zimna 			& normalna 		& silny & 0 \\ \hline
+	7 & pochmurna 	& zimna			& normalna 		& silny & 1 \\ \hline
+	8 & s³oneczna 	& umiarkowana 	& du¿a 			& s³aby & 0 \\ \hline
+	9 & s³oneczna 	& zimna 			& normalna 		& s³aby & 1 \\ \hline
+	10 & deszczowa & umiarkowana 	& normalna 		& s³aby & 1 \\ \hline
+	11 & s³oneczna & umiarkowana 	& normalna 		& silny & 1 \\ \hline
+	12 & pochmurna & umiarkowana 	& du¿a 			& silny & 1 \\ \hline
+	13 & pochmurna & ciep³a 		& normalna 		& s³aby & 1 \\ \hline
+	14 & deszczowa & umiarkowana 	& du¿a 			& silny & 0 \\ \hline
+	\end{tabular}
+\end{center}
+\end{table}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Tryby uczenia siê}
+\label{sec:trybyUczeniaSie}
+
+Wa¿nym elementem dla algorytmów uczenia siê jest sposób dostarczania danych trenuj¹cych. Niektóre z nich dopuszczaj¹ kilka mo¿liwych trybów, a niektóre s¹ ograniczane do jednego szczególnego przypadku. W tej czêœci pracy postaramy siê przedstawiæ trzy najwa¿niejsze \emph{tryby uczenia siê}, tryb wsadowy, tryb inkrementacyjny oraz tryb epokowy.~W~praktycznej czêœci pracy skupimy siê g³ównie na trybie wsadowym, wspominaj¹c o trybie inkrementacyjnym.
+
+\begin{description}
+\item[Tryb wsadowy] Jest to podstawowy tryb uczenia siê. Nak³ada najmniejsze wymagania na algorytm,~w~zasadzie ka¿dy algorytm, który mo¿e wykorzystaæ inny tryb, mo¿e wykorzystaæ równie¿ tryb wsadowy.~W~trybie tym uczeñ na samym pocz¹tku otrzymuje ca³¹ informacjê trenuj¹c¹, na podstawie której opiera swoje póŸniejsze dzia³anie. Kontakt z nauczycielem sprowadza siê jedynie do pocz¹tkowego momentu dzia³ania ucznia podczas procesu uczenia (przy przekazywaniu wszystkich przyk³adów ucz¹cych)~\cite{Cich07}.
+\item[Tryb inkrementacyjny] W trybie inkrementacyjnym, ka¿dy przyk³ad jest podawany uczniowi pojedynczo. Po ka¿dym przetworzonym przyk³adzie, uczeñ udoskonala swoj¹ hipotezê. Dodatkowo, w dowolnym momencie mo¿na uznaæ hipotezê za wystarczaj¹co dobr¹ i zaprzestaæ dalszego procesu uczenia. Uczenie to ze wzglêdu na swój charakter jest nazywane uczeniem \emph{na bie¿¹co}. Najwiêksz¹ przydatnoœæ algorytmy odnajduj¹~w~przypadkach, gdzie brak jest~z~góry okreœlonego zbioru trenuj¹cego na pocz¹tku procesu uczenia siê~\cite{Cich07}.
+\item[Tryb epokowy] Tryb epokowy jest~w~pewnym sensie po³¹czeniem dwóch wy¿ej wymienionych trybów. Jest on zorganizowany~w~tzw. \emph{epoki}.~W~ka¿dej~z~nich przetwarzany jest pewien zbiór danych trenuj¹cych. Po zakoñczeniu ka¿dej epoki, hipoteza ucznia jest uaktualniana~\cite{Cich07}.
+\end{description}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Obci¹¿enie indukcyjne}
+\label{sec:obciazenieIndukcyjne}
+
+Obci¹¿enie indukcyjne okreœla w³aœciwoœci algorytmu, które decyduj¹~o~wyborze hipotezy~w~przypadku, gdy wiedza wrodzona~i~informacja trenuj¹ca nie wystarczaj¹ do jej jednoznacznego wyznaczenia. Obci¹¿enie indukcyjne mo¿emy zdefiniowaæ jako~\cite{Cich07}:
+\begin{definition}
+Obci¹¿eniem algorytmu indukcyjnego uczenia siê bêdziemy nazywaæ czynniki, które decyduj¹~o~wyborze jednej hipotezy spoœród zbioru hipotez dopuszczalnych ze wzglêdu na cel uczenia siê.
+\end{definition}
+Hipoteza indukcyjna jest logiczn¹ konsekwencj¹ wiedzy wrodzonej, informacji trenuj¹cej i obci¹¿enia. Obci¹¿enie czêsto zale¿y od za³o¿eñ jakie przyjmuje algorytm, dlatego przy analizach algorytmów dodatkowo skupimy siê na obci¹¿eniu indukcyjnym zwi¹zanym~z~danym algorytmem uczenia maszynowego~\cite{Cich07}.~W~pracy Hausslera~\cite{Hauss88} znajdziemy obszerne informacje na temat obci¹¿enia indukcyjnego.
+
+%---------------------------------------------------------------------------
+
+\section{Indukcja drzew decyzyjnych}
+\label{sec:indukcjaDrzewDecyzyjnych}
+
+Drzewa decyzyjne s¹ jedn¹ z najbardziej znanych i najszerzej praktycznie u¿ywanych metod uczenia maszynowego. Algorytmy te pozwalaj¹ przybli¿aæ funkcje operuj¹ce na dyskretnych wartoœciach dla których wynikiem jest pojêcie odpowiadaj¹ce pewnej kategorii~\cite{Mit97}. Poni¿szy rozdzia³ opisuje tê metodê uczenia maszynowego. Aktualnie mo¿na znaleŸæ wiele praktycznie wykorzystywanych i popularnych algorytmów indukcji drzew decyzyjnych, takie jak ID3~\cite{Quin86}, CART~\cite{Brei84}, ASSISTANT~\cite{Kono84} czy C4.5~\cite{Quin93}.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Reprezentacja drzewa decyzyjnego}
+\label{sec:reprezentacjaDrzewaDecyzyjnego}
+
+Drzewo decyzyjne sk³ada siê z \emph{korzenia}, wêz³ów przechowuj¹cych testy, liœci przechowuj¹cych kategorie oraz krawêdzi ³¹cz¹cych wymienione elementy. Testy w wêz³ach sprawdzaj¹ wartoœci atrybutów przyk³adów. Na podstawie wyniku testu prowadz¹ albo do innego wêz³a albo do liœcia. Dziêki takiej reprezentacji danych mo¿emy przedstawiæ dowolne hipotezy z dziedziny problemu~\cite{Kraw04}. Formalny opis drzewa odnajdziemy~w~ ksi¹¿ce~\cite{Cich07}: drzewo okreœla siê jako dowolny spójny skierowany graf acykliczny, przy czym krawêdzie takiego grafu, s¹ nazywane wêz³ami, a pozosta³e wierzcho³ki - liœæmi. Dodatkowo przyjmuje siê, ¿e w grafie istnieje tylko jedna œcie¿ka miêdzy ró¿nymi wierzcho³kami. Id¹c dalej, definicje struktury drzewiastej mo¿emy przedstawiæ w sposób rekurencyjny~\cite{Cich07}:
+\begin{definition}
+Za³ó¿my, ¿e dana jest dziedzina~$C$, na której s¹ okreœlone atrybuty $a_{1},a_{2},\dots,a_{n}$ oraz klasa pojêæ~$\mathbb{C}$~o~zbiorze kategorii~$C$.
+\begin{enumerate}
+\item Liœæ zawieraj¹cy dowoln¹ etykietê kategorii $d \in C$ jest drzewem decyzyjnym.
+\item Jeœli $t\ \colon\ X \mapsto R_{t}$ jest testem przeprowadzonym na wartoœciach atrybutów przyk³adów~o~zbiorze mo¿liwych wyników $R_{t} = \{r_{1},r{2},\dots,r_{m}\}$ oraz $\mathbb{T}_{1},\mathbb{T}_{2},\dots,\mathbb{T}_{m}$ s¹ drzewami decyzyjnymi, to wêze³ zawieraj¹cy test~$t$,~z~którego wychodzi~$m$~ga³êzi, przy czym dla $i = 1,2,\dots,m$ ga³¹Ÿ $i$-ta odpowiada wynikowi $r_{i}$ i prowadzi do drzewa $\mathbb{T}_{i}$, jest drzewem decyzyjnym.
+\end{enumerate}
+\end{definition}
+
+Test zawierany przez wêze³ jest funkcj¹ na atrybutach przyk³adu odwzorowuj¹c¹ go na zbiór wyników testu. W szczególnych przypadkach wynikiem testu jest kategoria, co prowadzi bezpoœrednio do liœcia zawieraj¹cego dan¹ kategoriê. Mo¿emy teraz zapisaæ definicjê bazuj¹c na ksi¹¿ce~\cite{Cich07}. Jeœli wêze³ zawiera test~$t$~ o zbiorze wyników $R_{t} = \{r_{1},r_{2},\dots,r_{m}\}$, a odpowiadaj¹ce im ga³êzie prowadz¹ do poddrzew $\mathbb{T}_{1},\mathbb{T}_{2},\dots,\mathbb{T}_{m}$, to hipotezê reprezentowan¹ przez ten wêze³ mo¿na dla ka¿dego przyk³adu $x \in X$ zapisaæ nastêpuj¹co~\cite{Cich07}:
+
+\begin{equation}
+h(x)  =  \left\lbrace
+\begin{array}{rcl}
+\vspace*{7mm} h_{1}(x)  &  \mbox{jeœli} & t(x)  =  r_{1},\\ 
+\vspace*{7mm} h_{2}(x)  &  \mbox{jeœli} & t(x)  =  r_{2},\\
+\vspace*{7mm} \dots  &	\	& \ \\
+h_{m}(x)  &  \mbox{jeœli} &  t(x)  =  r_{m},\\
+\end{array}
+\right.
+\end{equation}
+
+\vspace*{1cm}
+przy czym $h_{1},h{2},\dots,h_{m}$ s¹ odpowiednio hipotezami reprezentowanymi przez drzewa  $\mathbb{T}_{1},\mathbb{T}_{2},\dots,\mathbb{T}_{m}$.
+
+Wyznaczenie klasy do której nale¿y obiekt za pomoc¹ drzewa decyzyjnego polega na przejœciu œcie¿ki od korzenia drzewa do jednego z liœci, poprzez przechodzenie przez kolejne testy w wêz³ach wzd³u¿ krawêdzi drzewa~\cite{Cich07}. Ka¿dy test dok³adnie opisuje w jaki sposób dokonano podzia³u na podstawie wartoœci atrybutów obiektu. Dodatkowo o drzewie mówimy, ¿e jest drzewem \emph{klasyfikacyjnym}, jeœli jest reprezentacj¹ podzia³u zbioru obiektów na jednorodne klasy~\cite{Gat98}. W dalszej czêœci pracy bêdziemy w razie potrzeby oznaczaæ przez $N_{\mathbb{T}}$ zbiór wêz³ów drzewa decyzyjnego $\mathbb{T}$ oraz przez $L_{\mathbb{T}}$ zbiór jego liœci~\cite{Cich07}.
+
+\begin{sample}
+Dla dziedziny stanów pogody z przyk³adu~\ref{prz:Pogoda} przyk³adowe drzewo decyzyjne znajduje siê na rysunku~\ref{rys:drzwewoDecyzyjneDlaPogody}. Decyzj¹, któr¹ podejmujemy w tym przypadku jest gra w tenisa. Oczywiœcie, to czy zagramy zale¿y od stanu pogody~\ref{tab:zbiorTrenujacyPogoda}. Przyk³ad zawiera trzy wêz³y, z których wêze³ \emph{aura} jest zarazem korzeniem drzewa. Liœcie reprezentuj¹ dwie kategorie, gramy w tenisa~(\emph{tak}) lub nie gramy w tenisa~(\emph{nie}). Dla obiektu s³oneczny, wilgotnoœæ normalna, wiatr silny otrzymujemy kategoriê \emph{tak}. Pierwszym testem jest \emph{aura}, który przenosi nas poprzez krawêdŸ \emph{s³oneczny} do wêz³a z testem \emph{wilgotnoœci}. W tym przypadku test \emph{wiatru} jest pomijany. Nastêpnie test \emph{wilgotnoœci} prowadzi nas do liœcia z kategori¹ \emph{tak}. Drzewo decyzyjne, podane w przyk³adzie, mo¿emy równie¿ przedstawiaæ w innych reprezentacjach. Poni¿ej prezentujemy postaæ tekstow¹ naszego drzewa:
+\begin{lstlisting}
+aura = deszczowa =>
+	wiatr = silny => NIE
+	wiatr = s³aby => TAK
+aura = pochmurna => TAK
+aura = s³oneczna =>
+	wilgotnoœæ = du¿a => NIE
+	wilgotnoœæ = normalna => TAK
+\end{lstlisting}
+\end{sample}
+
+\begin{figure}[ht]
+    \begin{center}
+    \fbox{\includegraphics[width=.8\textwidth]{przykladoweDrzewoDecyzyjne.png}}
+    \caption{Drzewo decyzyjne dla stanów pogody}
+    \label{rys:drzwewoDecyzyjneDlaPogody}
+    \end{center}
+\end{figure}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Zalety i ograniczenia drzew decyzyjnych}
+\label{sec:zaletyOgraniczeniaDrzew}
+
+Drzewa decyzyjne posiadaj¹ wiele zalet, którym zawdziêczaj¹ swoj¹ popularnoœæ. W zasadzie dowolne pojêcia pojedyncze i wielokrotne mog¹ byæ reprezentowane przez drzewa decyzyjne, jeœli tylko mo¿na je zdefiniowaæ za pomoc¹ atrybutów u¿ywanych do opisu przyk³adów. Dodatkowo, metoda ta cechuje siê doœæ du¿¹ efektywnoœci¹ pamiêciow¹ w porównaniu z innymi podejœciami oraz pozwalaj¹ na efektown¹ implementacjê procesu klasyfikowania przyk³adów~\cite{Cich07}. Do tego nale¿y zaznaczyæ, ¿e dopóki drzewo nie osi¹gnie pewnego du¿ego stopnia komplikacji, jest stosunkowo czytelne dla cz³owieka, co czêsto nie pozostaje bez uwagi. Co wiêcej, mamy mo¿liwoœæ ³atwego przejœcia do reprezentacji regu³owej, której czytelnoœæ dla cz³owieka jest co najmniej taka jak dla drzew decyzyjnych~\cite{Cich07}.
+
+Z drugiej strony, z drzewami decyzyjnymi wi¹¿¹ siê równie¿ pewne ograniczenia. Po pierwsze, podstawowe algorytmy dzia³aj¹ tylko na atrybutach dyskretnych, przez co musimy dokonywaæ dyskretyzacji wszelakich atrybutów ci¹g³ych. Oczywiœcie istniej¹ rozszerzenia tych algorytmów, które pozwalaj¹ pracowaæ z atrybutami ci¹g³ymi. Jednak wi¹¿e siê to ze zwiêkszeniem stopnia skomplikowania samego algorytmu oraz czêsto z utrat¹ wydajnoœci. Równie¿ testy pojedynczych atrybutów nie pozwalaj¹ nam wyszukiwaæ zale¿noœci miêdzy ró¿nymi atrybutami. W tym przypadku równie¿ istniej¹ rozszerzenia algorytmów pozwalaj¹ce radziæ sobie z t¹ niedogodnoœci¹, ale równie¿ tracimy na wydajnoœci algorytmu i komplikujemy samo rozwi¹zanie problemu. Ostatni¹ rzecz¹ o której mo¿na wspomnieæ, jest inkrementacyjna aktualizacja, z któr¹ równie¿ drzewa decyzyjne maj¹ problem~\cite{Cich07}. Dodatkowe informacje na ten temat mo¿na znaleŸæ w pozycji~\cite{Mit97} w rozdziale \emph{3.3}.
+
+Tak naprawdê, to czy zalety lub ograniczenia wp³ywaj¹ na nasz wybór zale¿y od samej domeny problemu. W przypadku rozwa¿anym w pracy, czyli zarz¹dzanie zadaniami w pewnej organizacji mamy do czynienia z danymi dyskretnymi. Równie¿ inkrementacyjna aktualizacja nie stanowi dla nas problemu ze wzglêdu na za³o¿enie, ¿e mamy odpowiedni zbiór danych ju¿ na  pocz¹tku procesu uczenia siê. Dlatego warto ponownie zaznaczyæ, ¿e poszczególne wady i ograniczenia w ró¿ny sposób oddzia³uj¹ na nasz wybór algorytmu do rozwi¹zania problemu w zale¿noœci w³aœnie od jego dziedziny i innych szczegó³ów.
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Algorytm indukcji drzew decyzyjnych - schemat ogólny}
+\label{sec:algoytmyIndukcjiDrzewDecyzyjnychSchematOgolny}
+
+W 1966 roku Hunt poda³ algorytm CLS (ang. Concept Learning System)~\cite{Hun66}. Algorytm ten tworzy opis pojêcia w postaci drzewa decyzyjnego. Dalszym rozwiniêciem tego algorytmu by³ algorytm ID3~\cite{Quin79}, który jest wykorzystywany jako podstawa algorytmu opracowanego w tej pracy. Oba algorytmy wykorzystuj¹ reprezentacjê przyk³adów domeny w postaci wektorów w³asnoœci. Pocz¹tkowym za³o¿eniem by³o wykorzystanie tylko wartoœci dyskretnych we w³asnoœciach przyk³adów, co w póŸniejszym czasie siê zmieni³o w kolejnych rozwiniêciach algorytmu ID3~\cite{BolZar93}. Drzewa reprezentuj¹ opisy pojêæ, w wêz³ach umieszczane s¹ testy, na wychodz¹cych z nich ga³êziach - mo¿liwe wyniki testów, a w liœciach - informacje o przynale¿noœci do konkretnych klas~\cite{BolZar93}.
+
+Wiêkszoœæ algorytmów uczenia siê drzew decyzyjnych opiera siê na podobnym heurystycznym schemacie zstêpuj¹cego konstruowania drzewa (ang. TDIDT - Top Down Induction of Decision Trees). Rozwi¹zanie to zosta³o u¿yte ju¿ w pierwszych algorytmach, takich jak wspominany ID3~\cite{Quin79} czy CART~\cite{Brei84}. Sposób wyboru testu dla wêz³a zwi¹zanego z ocen¹ jakoœci podzia³u zbioru, techniki uwzglêdniania ró¿nego rodzaju zaburzeñ w opisie przyk³adów ucz¹cych to tylko niektóre z ró¿nic miêdzy konkretnymi algorytmami~\cite{Kraw04}.
+
+Przedstawimy teraz podstawowy schemat zstêpuj¹cego konstruowania drzewa w oparciu o podstawowy algorytm ID3. Budowa drzewa rozpoczyna siê w od podjêcia decyzji, czy ma ono byæ liœciem czy wêz³em, oraz odpowiedniego wyboru etykiety kategorii w pierwszym przypadku lub testu w drugim przypadku. Gdy wybrany zosta³ wariant z wêz³em, wówczas poszczególnym wynikom testów odpowiadaj¹ ga³êzie prowadz¹ce z tego wêz³a do poddrzew skonstruowanych zgodnie z tym samym schematem~\cite{Mit97}~\cite{Cich07}.
+
+Schemat ten najwygodniej zdefiniowaæ w postaci procedury rekurencyjnej. Zak³adamy, ¿e otrzymuje ona jako argumenty zbiór P etykietowanych przyk³adów pojêcia docelowego \emph{c}, dla których ma byæ zbudowane drzewo, domyœln¹ etykietê kategorii \emph{d} przypisywan¹ tworzonemu liœciowi, jeœli w³aœciwej etykiety nie mo¿na okreœliæ na podstawie zbioru \emph{P}, oraz zbioru testów \emph{S}, jakie mog¹ byæ u¿yte w tworzonych wêz³ach. Algorytm zosta³ przedstawiony w dalszej czêœci pracy~\ref{lst:budujDrzewo}. Jest to oczywiœcie wy¿ej wspomniany algorytm TDIDT. Operacja budowania drzewa dla zbioru trenuj¹cego \emph{T} mo¿e byæ zapisana jako wywo³anie \emph{buduj-drzewo$(T, arg \max_{d} \left| T^{d} \right|, S)$} jeœli przyjmiemy za domyœln¹ etykietê kategorii najliczniej reprezentowanej w zbiorze trenuj¹cym~\cite{Cich07}.
+
+O utworzeniu liœcia lub wêz³a w naszym algorytmie decyduje kryterium stopu. Jeœli zosta³o spe³nione, tworzony jest liœæ~\textbf{l}~i~na podstawie etykietowanych przyk³adów ze zbioru \emph{P} ustalana jest jego etykieta $d_{l}$, na czym koñczymy proces budowy drzewa. W przeciwnym wypadku tworzymy wêze³ \textbf{n} - dokonuje siê wyboru testu $t_{n}$ ze zbioru \emph{S}, a nastêpnie dla ka¿dego z jego mo¿liwych wyników odpowiednia ga³¹Ÿ wêz³a prowadzi do poddrzewa, które jest budowane przez wywo³anie tej samej procedury rekurencyjnie. Ka¿de wywo³anie rekurencyjne tworzy poddrzewo, do którego ma prowadziæ ga³¹Ÿ odpowiadaj¹ca wynikowi \emph{r} testu $t_{n}$. Dodatkowo, ka¿de takie wywo³anie otrzymuje jako argument zbiór przyk³adów zawieraj¹cych wy³¹cznie te przyk³ady z \emph{P}, dla których test $t_{n}$ daje wynik \emph{r}. Zbiór pozostaj¹cych testów \emph{S} jest pomniejszany o test $t_{n}$, gdy¿ jego ponowne zastosowanie na ni¿szym poziomie drzewa nie przynosi ¿adnych korzyœci~\cite{Cich07}.
+
+Wystêpuj¹ce w schemacie operacje \emph{kryterium-stopu, kategoria i wybierz-test} pozwalaj¹ na ró¿ne konkretyzacje algorytmu. W dalszej czêœci zostan¹ opisane konkretne rozwi¹zania realizuj¹ce powy¿sze operacje.
+
+\lstset{emph={buduj-drzewo,kryterium-stopu,kategoria,wybierz-test}}
+
+\begin{lstlisting}[name=BudujDrzewo, language=Pascal, caption={Schemat zstêpuj¹cego konstruowania drzewa decyzyjnego~\cite{Cich07}}, label={lst:budujDrzewo}]
+function buduj-drzewo(P,d,S)
+\end{lstlisting}
+\textbf{Argumenty Wejœciowe:}
+\begin{enumerate}
+\item P - zbiór przyk³adów etykietowanych pojêcia c,
+\item d - domyœlna etykieta kategorii,
+\item S - zbiór mo¿liwych testów;
+\end{enumerate}
+\textbf{Zwraca:} drzewo decyzyjne reprezentuj¹ce hipotezê przybli¿aj¹c¹ \emph{c} na zbiorze \emph{P};
+
+\begin{lstlisting}[name=BudujDrzewo, language=Pascal, frame = trBL, mathescape=true, otherkeywords={{l},{return}}]
+if kryterium-stopu(P,S) then
+	utwórz liœæ l;
+	$d_{1}$ := kategoria(P,d);
+	return l;
+end if;
+utwórz wêze³ n;
+$t_{n}$ := wybierz-test(P,S);
+d := kategoria(P,S);
+
+for $r \in R_{t_{n}}$ do
+	n[r] := buduj-drzewo($P_{t_{n}r}, d, S - {t_{n}}$);
+end for;
+
+return n
+\end{lstlisting}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Realizacja schematu ogólnego}
+\label{sec:realizacjaSchematuOgolnegoKryteriumStopu}
+
+\subsubsection*{Kryterium stopu i ustalenie etykiety}
+
+Ka¿de rekurencyjne przejœcie algorytmu zawê¿a nam liczbê przyk³adów analizowanych w kolejnych testach. Zag³êbiaj¹c siê coraz dalej, liczba przyk³adów nadal siê zmniejsza a¿ do momentu kiedy wszystkie przyk³ady znajduj¹ce siê w danym wêŸle nale¿¹ do jednej kategorii lub zbiór przyk³adów jest pusty. Widzimy tutaj najprostszy i zrazem naturalny warunek stopu. Warunek ten mo¿e byæ sformalizowany w nastêpuj¹cy sposób~\cite{Cich07}:
+\begin{equation}
+	P = \emptyset \vee \left|~\{d' \in C~|~(\exists x \in P)~c(x) = d'\}~\right| = 1.
+\end{equation}
+W podanym równaniu przez \emph{C} oznaczono zbiór kategorii dla rozwa¿anej klasy pojêæ. Dla dwóch przypadków, które s¹ rozwa¿ane tworzymy liœcia. Gdy wszystkie przyk³ady nale¿¹ do jednej kategorii, wówczas przypisujemy liœciowi tê kategorie. W przeciwnym przypadku, kiedy zbiór przyk³adów jest pusty -- przypisujemy liœciowi kategoriê domyœln¹, czyli najczêœciej kategorie najliczniej reprezentowan¹ przez zbiór przyk³adów rozwa¿anych we wczeœniejszym kroku algorytmu. W tym momencie mamy zdefiniowan¹ podstawow¹ wersjê operacji \emph{kategoria(P, d)}~\cite{Cich07}.
+
+Dodatkowo mo¿na za³o¿yæ pewne z³agodzenie warunku stopu, które pozwoli wczeœniej nam zatrzymaæ algorytm. Jeœli dla pewnego problemu wystarczaj¹ce jest aby wiêkszoœæ przyk³adów nale¿a³a do jednej kategorii gdy liczba przyk³adów spadnie poni¿ej pewnego za³o¿onego minimum, wówczas mo¿emy zdecydowaæ siê na przypisanie tej kategorii jako wartoœæ liœcia. Jest to jedno z rozwi¹zañ stosowanych w celu unikniêcia nadmiernego dopasowania drzewa decyzyjnego do zbioru przyk³adów~\cite{Cich07}. Do problemu tego wrócimy w dalszej czêœci pracy.
+
+\subsubsection*{Rodzaje testów}
+
+W naszej pracy wykorzystujemy wy³¹cznie testy dla atrybutów nominalnych, dlatego te¿ opiszemy tylko ten rodzaj testów. Innymi bardzo popularnymi testami s¹ testy dla atrybutów porz¹dkowych i ci¹g³ych.
+
+Zak³adamy, ¿e atrybuty posiadaj¹ wartoœci nominalne o skoñczonej, stosunkowo niewielkiej liczbie wartoœci. Stosowane testy s¹ dosyæ proste, testujemy wartoœæ atrybutu. Mo¿na to uj¹æ w sposób formalny. Dla testu \emph{t} i atrybutu \emph{a}, takich ¿e $t~:~X \mapsto R_{t}, a~: X \mapsto A$ mamy $R_{t} = A$ oraz dla ka¿dego $x \in X$ mamy $t(x) = a(x)$~\cite{Cich07}. Takie testy nazywamy testami \emph{to¿samoœciowymi}.
+
+\subsubsection*{Kryterium wyboru testu}
+
+Dochodzimy do g³ównego elementu algorytmów drzew decyzyjnych -- wyboru testu. Od wyboru testu, czyli w naszym przypadku od wyboru atrybutu który testujemy i warunku, który musi spe³niæ zale¿y jakoœæ dzia³ania samego drzewa decyzyjnego. Przy wyborze takiego testu na danym poziomie drzewa bêdziemy wykorzystywaæ \emph{zysk informacyjny} (ang. information gain). Zysk informacyjny wskazuje jak du¿¹ wartoœæ ma wykorzystanie danego atrybutu dziel¹cego przyk³ady na podzbiory do dalszych testów~\cite{Mit97}.
+
+Najprostsz¹ i skuteczn¹ miar¹ spe³niaj¹c¹ nasze wymagania jest \emph{entropia} (ang. entropy), która charakteryzuje czystoœæ przyk³adów w danym zbiorze. Idea³em w tym przypadku jest zbiór przyk³adów jednej kategorii, który jest zbiorem czystym z punktu widzenia entropii i osi¹ga najkorzystniejsz¹ wartoœæ miary. Jeœli weŸmiemy pod uwagê zbiór przyk³adów \emph{S}, zawieraj¹cy przyk³ady spe³niaj¹ce pewien warunek i niespe³niaj¹ce (binarna klasyfikacja), entropiê mo¿emy zdefiniowaæ w nastêpuj¹cy sposób~\cite{Mit97}:
+
+\begin{equation}
+\label{eq:entropyBinary}
+	Entropy(S) \equiv -p_{\varoplus} \log_{2} p_{\varoplus} - p_{\varominus} \log_{2} p_{\varominus},
+\end{equation}
+
+gdzie $p_{\varoplus}$ jest stosunkiem liczby przyk³adów spe³niaj¹cych warunek do liczby wszystkich przyk³adów, a $p_{\varominus}$ jest stosunkiem przyk³adów niespe³niaj¹cych warunku.
+
+\begin{sample}
+Przyk³adowo, S jest kolekcj¹ 20 elementów typu binarnego, gdzie 12 jest pozytywnych, a reszta negatywnych. Wówczas entropia wynosi:
+
+$Entropy(12+,8-) = - (12/20)\log_{2}(12/20) - (8/20)\log_{2}(8/20) = 0,970$.
+\end{sample}
+Nale¿y zwróciæ uwagê na kilka aspektów powi¹zanych z t¹ miar¹. Gdy wszystkie przyk³ady nale¿¹ do jednej kategorii, entropia wynosi 0. Gdy zbiory odpowiadaj¹ce ró¿nym kategori¹ maj¹ te same liczby przyk³adów, entropia wynosi 1. W pozosta³ych przypadkach, wartoœæ entropii zawiera siê miedzy 0 i 1.
+
+Jednak podana miara oczywiœcie jest niewystarczaj¹ca. Potrzebujemy miary, która dla dowolnej liczby kategorii bêdzie wstanie wskazaæ nam wartoœæ entropii. Dlatego bêdziemy korzystaæ z bardziej ogólnej definicji~\cite{Mit97}:
+\begin{equation}
+\label{eq:entropy}
+	Entropy(S) \equiv \sum_{i=1}^{C} - p_{i}\log_{2}p_{i}
+\end{equation}
+gdzie S jest zbiorem przyk³adów, \emph{i} jest kolejn¹ kategori¹ ze zbioru \emph{C}, a $p_{i}$ jest odpowiednim stosunkiem elementów kategorii \emph{i} do wszystkich elementów.
+
+Maj¹c jako narzêdzie mechanizm wyznaczania czystoœci zbioru, mo¿emy zdefiniowaæ miarê \emph{zysku informacyjnego} opart¹ o definicjê ogóln¹ entropii. Bêdziemy starali siê uzyskaæ oczekiwan¹ wysok¹ wartoœæ zysku informacyjnego poprzez partycjonowanie danych za pomoc¹ wyznaczania entropii dla ka¿dego atrybutu. Najlepszy podzia³ (najlepsza wartoœæ zysku informacyjnego) bêdzie nam wskazywaæ najlepszy test, który powinien zostaæ u¿yty na danym poziomie drzewa decyzyjnego. Zysk informacyjny definiujemy nastêpuj¹co~\cite{Mit97}:
+\begin{equation}
+\label{eq:gainInformation}
+	Gain(S,A) \equiv Entropy(S) - \sum_{v \in Values(A)} \frac{\left|S_{v}\right|}{\left|S\right|} Entropy(S_{v})
+\end{equation}
+gdzie $Values(A)$ jest zbiorem mo¿liwych wartoœci atrybutu $A$ oraz $S_{v}$ jest podzbiorem przyk³adów $S$, które posiadaj¹ odpowiedni¹ wartoœæ atrybutu $A$. Dodatkowo wykorzystujemy tu znan¹ nam miarê entropii, oraz stosunek liczby elementów zbioru $S_{v}$ i zbioru wszystkich elementów $S$ - $\frac{\left|S_{v}\right|}{\left|S\right|}$~\cite{Mit97}.
+
+Poni¿ej znajduje siê przyk³ad na podstawie danych z tabeli~\ref{tab:zbiorTrenujacyPogoda}. Sprawdzimy zysk informacyjny dla atrybutów \emph{aura}, \emph{temperatura}, \emph{wilgotnoœæ} i \emph{wiatr}.
+
+\begin{sample}
+\label{ex:zyskInformacyjny}
+Zbiór przyk³adów~\ref{tab:zbiorTrenujacyPogoda}, dane dla ca³ego zbioru: \textbf{S} = [9+,5-], \textbf{Entropy(S)} = 0.940 \\
+
+\textbf{Zysk informacyjny dla atrybutu aura:} \\
+Values(aura) = [s³oneczna, pochmurna, deszczowa] \\
+$S_{sloneczna} = [2+,3-]$ \\
+$S_{pochmurna} = [4+,0-]$ \\
+$S_{deszczowa} = [3+,2-]$ 
+
+\textbf{GAIN(S,aura)}~$= Entropy(S) - \sum_{v \in \{sloneczna,pochmurna,deszczowa\}} \frac{\left|S_{v}\right|}{\left|S\right|} Entropy(S_{v}) =$ \\
+$=Entropy(S) - \frac{5}{14}Entropy(S_{sloneczna}) - \frac{4}{14}Entropy(S_{pochmurna}) - \frac{5}{14}Entropy(S_{deszczowa}) =$ \\
+$=0,940 - \frac{5}{14}(0,970) - \frac{4}{14}(0) - \frac{5}{14}(0,970) = 0,247$ \\
+\newline
+\textbf{Zysk informacyjny dla atrybutu temperatura:} \\
+Values(temperatura) = [ciep³a, umiarkowana, zimna] \\
+$S_{ciepla} = [2+,2-]$ \\
+$S_{umiarkowana} = [4+,2-]$ \\
+$S_{zimna} = [3+,1-]$ 
+
+\textbf{GAIN(S,temperatura)}~$= Entropy(S) - \sum_{v \in \{ciepla,umiarkowana,zimna\}} \frac{\left|S_{v}\right|}{\left|S\right|} Entropy(S_{v}) =$ \\
+$=Entropy(S) - \frac{4}{14}Entropy(S_{ciepla}) - \frac{6}{14}Entropy(S_{umiarkowana}) - \frac{4}{14}Entropy(S_{zimna}) =$ \\
+$=0,940 - \frac{4}{14}(1) - \frac{6}{14}(0,918) - \frac{4}{14}(0,811) = 0,029$ \\
+\newline
+\textbf{Zysk informacyjny dla atrybutu wilgotnoœæ:} \\
+Values(wilgotnoœæ) = [du¿a, normalna] \\
+$S_{duza} = [3+,4-]$ \\
+$S_{normalna} = [6+,1-]$ 
+
+\textbf{GAIN(S,wilgotnoœæ)}~$= Entropy(S) - \sum_{v \in \{duza,normalna\}} \frac{\left|S_{v}\right|}{\left|S\right|} Entropy(S_{v}) =$ \\
+$=Entropy(S) - \frac{7}{14}Entropy(S_{duza}) - \frac{7}{14}Entropy(S_{normalna}) =$ \\
+$=0,940 - \frac{7}{14}(0,985) - \frac{7}{14}(0,591) = 0,152$ \\
+\newline
+\textbf{Zysk informacyjny dla atrybutu wiatr:} \\
+Values(wiatr) = [s³aby, silny] \\
+$S_{slaby} = [6+,2-]$ \\
+$S_{silny} = [3+,3-]$ 
+
+\textbf{GAIN(S,wiatr)}~$= Entropy(S) - \sum_{v \in \{slaby,silny\}} \frac{\left|S_{v}\right|}{\left|S\right|} Entropy(S_{v}) =$ \\
+$=Entropy(S) - \frac{8}{14}Entropy(S_{slaby}) - \frac{6}{14}Entropy(S_{silny}) =$ \\
+$=0,940 - \frac{8}{14}(0,811) - \frac{6}{14}(1) = 0,048$ \\
+
+Z obliczeñ wynika, ¿e najlepszym atrybutem testowym w pocz¹tkowej fazie tworzenia drzewa decyzyjnego jest atrybut aura, którego zysk informacyjny jest najwy¿szy~i~wynosi~$0,247$.
+\end{sample}
+
+Niestety algorytm ten ma pewn¹ wadê. Faworyzuje on atrybuty o dziedzinach wielowartoœciowych wzglêdem innych atrybutów o niewielkiej liczbie wartoœci. W pewnych sytuacjach prowadzi to do niepotrzebnego i nadmiernego powiêkszania drzewa decyzyjnego (g³ównie wszerz). Algorytm ten zbytnio przywi¹zuje siê do danych ucz¹cych, przez co maleje jego korzyœæ w sytuacjach ogólnych~\cite{Kraw04}. Dlatego, wykorzystamy inn¹ miarê, która niweluje tê wadê. Miarê tak¹ zaproponowa³ Quinlan~\cite{Quin86}. Pomys³ polega na karaniu atrybutów o wielowartoœciowych domenach, a sama miara nazywa siê \emph{podzia³em informaji} (ang. split information). Zdefiniowana jest w nastêpuj¹cy sposób~\cite{Mit97}\cite{Quin86}:
+\begin{equation}
+	SplitInformation(S,A) \equiv - \sum_{i=1}^{C} \frac{\left|S_{i}\right|}{\left|S\right|} \log_{2} \frac{\left|S_{i}\right|}{\left|S\right|}
+\end{equation}
+gdzie $S_{i}$ jest podzbiorem S utworzonym podczas podzia³u przez wartoœæ atrybutu A odpowiedni¹ dla danej kategorii \emph{i}. Dziêki tak zdefiniowanej mierze, mo¿emy pójœæ krok dalej i zapisaæ now¹ miarê zysku informacyjnego, któr¹ bêdziemy nazywaæ ilorazem przyrostu informacji (ang. gain ratio)~\cite{Quin86}:
+\begin{equation}
+\label{eq:gainRatio}
+	GainRatio(S,A) \equiv \frac{Gain(S,A)}{SplitInformation(S,A)}
+\end{equation}
+Miara ta dokonuje normalizacji wartoœci, przez co znika bezzasadne faworyzowanie wielowartoœciowych atrybutów. Równie¿ w tym przypadku, atrybut który uzyska najwy¿sz¹ wartoœæ naszej miary, bêdzie atrybutem preferowanym do utworzenia testu na aktualnym poziomie drzewa, dla przyk³adów \emph{S} i zbioru kategorii \emph{C}.
+\newpage
+\begin{sample}
+Wykorzystuj¹c dane z tabeli~\ref{tab:zbiorTrenujacyPogoda}, spróbujemy dla wszystkich 4 atrybutów ustaliæ wartoœci ilorazu przyrostu informacji. Po wykonanych obliczeniach, porównamy otrzymane wyniki z przyk³adem~\ref{ex:zyskInformacyjny}: \\\\
+Gain(S, aura) = 0,247 \\
+Gain(S, temperatura) = 0,029 \\
+Gain(S, wilgotnoœæ) = 0,152 \\
+Gain(S, wiatr) = 0,048 \\
+
+\textbf{Atrybut aura}: \\
+SplitInformation(S,aura)~$= -\frac{5}{14}\log_{2}\frac{5}{14} -\frac{4}{14}\log_{2}\frac{4}{14} -\frac{5}{14}\log_{2}\frac{5}{14} = 1,577$ \\
+GainRatio(S,aura)~$= \frac{Gain(S,aura)}{SplitInformation(S,aura)} = \frac{0,247}{1,577} = 0,157$ \\
+
+\textbf{Atrybut temperatura}: \\
+SplitInformation(S,temperatura)~$= -\frac{4}{14}\log_{2}\frac{4}{14} -\frac{6}{14}\log_{2}\frac{6}{14} -\frac{4}{14}\log_{2}\frac{4}{14} = 1,557$ \\
+GainRatio(S,temperatura)~$= \frac{Gain(S,temperatura)}{SplitInformation(S,temperatura)} = \frac{0,029}{1,557} = 0,019$ \\
+
+\textbf{Atrybut wilgotnoœæ}: \\
+SplitInformation(S,wilgotnosc)~$= -\frac{7}{14}\log_{2}\frac{7}{14} -\frac{7}{14}\log_{2}\frac{7}{14} = 1$ \\
+GainRatio(S,wilgotnosc)~$= \frac{Gain(S,wilgotnosc)}{SplitInformation(S,wilgotnosc)} = \frac{0,152}{1} = 0,152$ \\
+
+\textbf{Atrybut wiatr}: \\
+SplitInformation(S,wiatr)~$= -\frac{6}{14}\log_{2}\frac{6}{14} -\frac{8}{14}\log_{2}\frac{8}{14} = 0,985$ \\
+GainRatio(S,wiatr)~$= \frac{Gain(S,wiatr)}{SplitInformation(S,wiatr)} = \frac{0,048}{0,985} = 0,049$ \\
+
+Poprawiona miara znormalizowa³a nasze wyniki. Atrybuty posiadaj¹ce mniejsz¹ iloœæ wartoœci (wiatr, wilgotnoœæ) maj¹ powiêkszon¹ lub tê sam¹ wartoœæ, natomiast zmniejszy³ siê zysk informacyjny dla atrybutów z wiêksz¹ iloœci¹ wartoœci (aura, temperatura) zmniejszaj¹c ró¿nicê miêdzy nimi, a atrybutami z mniejsz¹ liczb¹ wartoœci. Nadal, jednak teraz nieznacznie, przewa¿a atrybut aura z wartoœci¹ $0,157$.
+
+\end{sample}
+
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+\subsection{Przycinanie drzewa}
+\label{sec:przycinanie drzewa}
+
+Z algorytmami drzew decyzyjnych wi¹¿e siê kilka problemów. Niektóre z nich, nie maj¹ wp³ywu na nasze rozwa¿ania w pracy, takie jak atrybuty ci¹g³e czy brak wartoœci atrybutów. Jednak jest jeden problem, który mo¿e siê pojawiæ i nale¿y mu siê dok³adniej przyjrzeæ. Chodzi o przeuczenie siê drzewa decyzyjnego. Problem wystêpuje, gdy dane ucz¹ce zawieraj¹ pewne szumy czy niejasnoœci, co powoduje zbytnie przywi¹zanie stworzonego drzewa do danych ucz¹cych. Objawia siê to du¿¹ efektywnoœci¹ drzewa decyzyjnego dla przyk³adów podobnych do tych, którymi drzewo by³o uczone, oraz s³abszymi wynikami dla ogólnych przyk³adów, które czêsto mog¹ siê nieco ró¿niæ wzglêdem danych ucz¹cych. Wed³ug badañ~\cite{Ming89} prowadzonych na zbiorze danych niedeterministycznych i zaszumionych, przeuczenie drzewa prowadzi³o nawet do 10\%-25\% spadku efektywnoœci. Dlatego jest to powa¿ny problem i to nie tylko w dziedzinie drzew decyzyjnych, ale w ca³ym obszarze zwi¹zanym z uczeniem maszynowym. Jeœli chodzi o drzewa decyzyjne, to opracowano dwa mechanizmy zapobiegania przeuczeniu drzewa~\cite{Mit97}:
+\begin{itemize}
+\item zapobieganie rozrastaniu siê drzewa poprzez ustalanie pewnych wystarczaj¹cych progów (np. ustalamy minimum liczby egzemplarzy, na podstawie których ustalamy wartoœæ liœcia - kategoriê. W przypadku kiedy nie wszystkie przyk³ady nale¿¹ do jednej kategorii, wybieramy kategoriê wiêkszoœciow¹). Mechanizm ten bêdziemy nazywaæ \emph{przycinaniem wstêpnym} (ang. pre-pruning). Podejœcie to zastosowano w systemie Assistant~\cite{Cest87}. Stosuje siê tam trzy kryteria stopu, które pomagaj¹ stosowaæ podejœcie przycinania wstêpnego i zapobieganiu nadmiernemu dopasowaniu do danych ucz¹cych.
+\item podejœcie drugie nazywaæ bêdziemy \emph{przycinaniem w pe³ni zbudowanego drzewa} (ang. post-prunning). Jest to podejœcie skuteczniejsze w praktyce, poniewa¿ operuje na ca³ym drzewie, co pozwala na ogólniejsz¹ analizê i ocenê sytuacji~\cite{Kraw04}. W podejœciu tym, kiedy mamy ju¿ zbudowane ca³e drzewo, obcinamy pewne fragmenty drzewa w zale¿noœci od wybranego podejœcia. Dok³adnie mechanizm ten omówiony jest poni¿ej.
+\end{itemize}
+
+\subsubsection*{Schemat przycinania}
+Schemat rozpoczyna siê od przegl¹dniêcia nieprzyciêtych jeszcze wêz³ów w drzewie, zaczynaj¹c od wêz³ów po³o¿onych najbli¿ej liœci. Redukujemy, a nastêpnie zastêpujemy liœciem wêze³ i jego poddrzewo. Teraz mo¿emy obliczyæ wybran¹ miarê oceny dla przyciêtego drzewa i porównujemy z drzewem, które tej redukcji nie posiada³o. Pogorszenie wartoœci miary oceny wskazuje, ¿e operacja nie zakoñczy³a siê sukcesem, zatem nale¿y przywróciæ przyciêty wêze³ wraz z jego poddrzewem. W przeciwnym wypadku, akceptujemy przyciête drzewo i powtarzamy operacje dla kolejnych niezredukowanych wêz³ów~\cite{Kraw04}.
+
+Decyduj¹c¹ rzecz¹ jest sposób szacowania wartoœci miary oceny, gdzie wyró¿niamy dwa g³ówne podejœcia~\cite{Kraw04}:
+\begin{enumerate}
+\item U¿ywamy oddzielnego zbioru przyk³adów w stosunku do zbioru ucz¹cego i za jego pomoc¹ oceniamy drzewo po przyciêciu.
+\item Wykorzystujemy wszystkie dane ze zbioru ucz¹cego korzystaj¹c dodatkowo z metod statystycznych w celu okreœlenia, czy zredukowane drzewo z pewnym okreœlonym prawdopodobieñstwem bêdzie lepsze od drzewa niezredukowanego.
+\end{enumerate}
+Pierwsze podejœcie najczêœciej jest wykorzystywane, kiedy dysponujemy sporym zbiorem danych i mo¿emy podzieliæ zbiór na \emph{zbiór ucz¹cy} i \emph{zbiór waliduj¹cy} (ang. training and validation approach). Jest to podejœcie bezpieczniejsze i czêsto skuteczniejsze ni¿ wykorzystywanie tylko zbioru ucz¹cego, ale tak jak wspomnieliœmy powy¿ej wymagane jest posiadanie sporej liczby etykietowanych przyk³adów~\cite{Kraw04}.
+W drugim podejœciu jesteœmy zdani na pewne heurystyczne oszacowania na zbiorze ucz¹cym. W tej tematyce zosta³o zaproponowane kilka podejœæ~\cite{Kraw04}:
+\begin{itemize}
+\item wyznaczenie pesymistycznego oszacowania b³êdu przycinanego wêz³a (modyfikacja rozk³adu dwumianowego), a nastêpnie porównanie z b³êdem liœcia, który mia³by go zast¹piæ~\cite{Quin87},
+\item wykorzystanie miary oceny z³o¿onoœci kodowania przyk³adów ucz¹cych oraz drzewa decyzyjnego - metoda oparta na minimalizacji d³ugoœci kodu (ang. MDL - Minimum Description Lenght)~\cite{Mit97}\cite{Kraw04}. Ocena skutecznoœci tej i innych metod znajduje siê w pracach~\cite{Ming89} oraz~\cite{Male95},
+\item metoda przycinania zastosowana w algorytmie C4.5, omówiona szczegó³owo w rodziale 4 ksi¹¿ki~\cite{Quin93} oraz w krótszej wersji, opisana w pracy~\cite{Koha02}.
+\end{itemize}
+%---------------------------------------------------------------------------
+
+\section{Podsumowanie}
+\label{sec:uczenieMaszynowePodsumowanie}
+
+W tym rozdziale dowiedzieliœmy siê, czym tak naprawdê jest uczenie maszynowe, oraz poznaliœmy dok³adnie jedn¹ z dziedzin uczenia maszynowego - drzewa decyzyjne. Skupiliœmy siê na drzewach decyzyjnych, poniewa¿ jest to metoda, która doskonale pasuje do rozwi¹zania problemu stawianego na pocz¹tku pracy - zwiêkszenie efektywnoœci pracy systemu zarz¹dzania zadaniami. Przy naszych za³o¿eniach, ¿e dane s¹ kompletne i prawdziwe oraz zawieraj¹ przyk³ady opisywane atrybutami dyskretnymi, mo¿emy przeœledziæ implementacje takiego algorytmu oraz jego dostosowanie do potrzeb istniej¹cego systemu. Przez istniej¹cy system rozumiemy stworzon¹ platformê dla celów tej pracy, do zarz¹dzania zadaniami w przedsiêbiorstwie. Dok³adny opis platformy znajduje siê w rozdziale~\ref{cha:systemZarzadzaniaZadaniami}. Implementacja algorytmu drzew decyzyjnych z naszymi rozszerzeniami zostanie opisana w kolejnym rozdziale~\ref{cha:implementacjaIndukcjiDrzew}. 
+
+Celem podsumowania czêœci teoretycznej, zbierzemy w krótkie podsumowanie informacje na temat drzew decyzyjnych~\cite{Cich07}:
+\begin{itemize}
+\item Drzewo decyzyjne to struktura drzewiasta - wêz³y reprezentuj¹ testy atrybutów, liœcie reprezentuj¹ przypisywane przyk³adom kategorie.
+\item Zaletami drzew decyzyjnych s¹ miedzy innymi: mo¿liwoœæ reprezentowania dowolnych hipotez, ³atwy sposób wygenerowania regu³ z drzewa decyzyjnego, efektywnoœæ pamiêciowa i czasowa klasyfikowania przyk³adów, czytelnoœæ dla cz³owieka.
+\item Algorytmy drzew decyzyjnych mo¿na opisaæ jako specjalizacja ogólnego schematu zstêpuj¹cego konstruowania drzewa. Specjalizacja sprowadza siê do okreœlenia kryterium stopu oraz mechanizmu wyboru testów.
+\end{itemize}
+
+Dodatkowo, zainteresowani tematem mog¹ rozszerzyæ swoj¹ wiedzê o zaawansowane aspekty zwi¹zane z drzewami decyzyjnymi korzystaj¹c z poni¿ej wymienionych prac:
+\begin{itemize}
+\item Przyrostowe konstruowanie drzewa -- \cite{Utgof89}\cite{Utgof97}\cite{Schli86}.
+\item Testy na wielu atrybutach -- \cite{Brod95}\cite{Murth94}\cite{Fult95}.
+\item Problem uwzglêdniania kosztów testów -- \cite{Tan93}\cite{Nune91}.
+\item Metody testowania hipotez statystycznych -- \cite{Cest90}.
+\item Brakuj¹ce wartoœci atrybutów w danych -- \cite{Quin89}.
+\end{itemize}

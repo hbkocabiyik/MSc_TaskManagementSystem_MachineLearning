@@ -1,0 +1,343 @@
+Rozszerzony algorytm:
+
+if( OPC Fundamentals == "False") {
+	if( BizTalk Server Administration Fundamentals == "False") {
+		if( Sharepoint == "False") {
+			if( ASP.NET Fundamentals == "False") {
+				if( XML Framework Fundamentals == "False") {
+					if( Oracle Database == "False") {
+						if( Area == "Organization") {
+							if( WCF Programming == "True") {
+									Employee = "jacek";
+							} else 							if( WCF Programming == "False") {
+									Employee = "karlik";
+							}
+						} else 						if( Area == "Database") {
+								Employee = "grzesiul";
+						} else 						if( Area == "BusinessIntelligence") {
+								Employee = "null";
+						} else 						if( Area == "Security") {
+								Employee = "karlik";
+						} else 						if( Area == "BusinessProcessStudio") {
+							if( Silverlight Fundamentals == "False") {
+									Employee = "grzesiek";
+							} else 							if( Silverlight Fundamentals == "True") {
+								if( WCF Programming == "True") {
+										Employee = "igor";
+								} else 								if( WCF Programming == "False") {
+										Employee = "tomasz";
+								}
+							}
+						} else 						if( Area == "WebPortal") {
+								Employee = "grzesiek";
+						} else 						if( Area == "ConfigurationTools") {
+							if( Ms Sql Server == "False") {
+									Employee = "jag";
+							} else 							if( Ms Sql Server == "True") {
+									Employee = "tomasz";
+							}
+						} else 						if( Area == "Performance") {
+								Employee = "jag";
+						} else 						if( Area == "Localization") {
+							if( Ms Sql Server == "False") {
+								if( Performance Fundamentals == "False") {
+										Employee = "karlik";
+								} else 								if( Performance Fundamentals == "True") {
+										Employee = "jacek";
+								}
+							} else 							if( Ms Sql Server == "True") {
+									Employee = "jacek";
+							}
+						} else 						if( Area == "Services") {
+								Employee = "jacek";
+						}
+					} else 					if( Oracle Database == "True") {
+							Employee = "bogumil";
+					}
+				} else 				if( XML Framework Fundamentals == "True") {
+					if( Ms Sql Server == "False") {
+							Employee = "szymon";
+					} else 					if( Ms Sql Server == "True") {
+							Employee = "grzesiul";
+					}
+				}
+			} else 			if( ASP.NET Fundamentals == "True") {
+				if( WCF Programming == "True") {
+					if( JavaScript Programming == "False") {
+							Employee = "jacek";
+					} else 					if( JavaScript Programming == "True") {
+							Employee = "jarek";
+					}
+				} else 				if( WCF Programming == "False") {
+						Employee = "irek";
+				}
+			}
+		} else 		if( Sharepoint == "True") {
+			if( WCF Programming == "True") {
+					Employee = "jarek";
+			} else 			if( WCF Programming == "False") {
+				if( JavaScript Programming == "False") {
+						Employee = "zuber";
+				} else 				if( JavaScript Programming == "True") {
+						Employee = "jarek";
+				}
+			}
+		}
+	} else 	if( BizTalk Server Administration Fundamentals == "True") {
+		if( WCF Programming == "True") {
+				Employee = "igor";
+		} else 		if( WCF Programming == "False") {
+				Employee = "marcin";
+		}
+	}
+} else if( OPC Fundamentals == "True") {
+		Employee = "konrad";
+}
+
+Podstawowy algorytm: 
+
+if( Area == "Organization") {
+	if( Localization Fundamentals == "True") {
+		if( WCF Programming == "True") {
+				Employee = "jacek";
+		} else 		if( WCF Programming == "False") {
+				Employee = "karlik";
+		}
+	} else 	if( Localization Fundamentals == "False") {
+		if( WCF Programming == "True") {
+				Employee = "null";
+		} else 		if( WCF Programming == "False") {
+			if( IIS Administration Fundamentals == "True") {
+					Employee = "null";
+			} else 			if( IIS Administration Fundamentals == "False") {
+				if( Architecture Fundamentals == "False") {
+					if( WPF Programming == "False") {
+						if( WF Programming == "False") {
+								Employee = "zuber";
+						} else 						if( WF Programming == "True") {
+								Employee = "marcin";
+						}
+					} else 					if( WPF Programming == "True") {
+							Employee = "szymon";
+					}
+				} else 				if( Architecture Fundamentals == "True") {
+					if( OPC Fundamentals == "False") {
+							Employee = "karlik";
+					} else 					if( OPC Fundamentals == "True") {
+							Employee = "konrad";
+					}
+				}
+			}
+		}
+	}
+} else if( Area == "Database") {
+	if( WCF Programming == "True") {
+			Employee = "null";
+	} else 	if( WCF Programming == "False") {
+		if( Localization Fundamentals == "True") {
+				Employee = "null";
+		} else 		if( Localization Fundamentals == "False") {
+			if( IIS Administration Fundamentals == "True") {
+					Employee = "null";
+			} else 			if( IIS Administration Fundamentals == "False") {
+				if( Ms Sql Server == "False") {
+						Employee = "bogumil";
+				} else 				if( Ms Sql Server == "True") {
+					if( Oracle Database == "False") {
+							Employee = "grzesiul";
+					} else 					if( Oracle Database == "True") {
+						if( XML Framework Fundamentals == "False") {
+								Employee = "bogumil";
+						} else 						if( XML Framework Fundamentals == "True") {
+								Employee = "grzesiul";
+						}
+					}
+				}
+			}
+		}
+	}
+} else if( Area == "BusinessIntelligence") {
+	if( WCF Programming == "True") {
+			Employee = "null";
+	} else 	if( WCF Programming == "False") {
+		if( Localization Fundamentals == "True") {
+				Employee = "null";
+		} else 		if( Localization Fundamentals == "False") {
+			if( IIS Administration Fundamentals == "True") {
+					Employee = "null";
+			} else 			if( IIS Administration Fundamentals == "False") {
+				if( COM Fundamentals == "False") {
+					if( Ms Sql Server == "False") {
+							Employee = "bogumil";
+					} else 					if( Ms Sql Server == "True") {
+							Employee = "grzesiul";
+					}
+				} else 				if( COM Fundamentals == "True") {
+						Employee = "marcin";
+				}
+			}
+		}
+	}
+} else if( Area == "Security") {
+	if( Localization Fundamentals == "True") {
+			Employee = "null";
+	} else 	if( Localization Fundamentals == "False") {
+		if( ASP.NET Fundamentals == "False") {
+			if( WCF Programming == "True") {
+					Employee = "null";
+			} else 			if( WCF Programming == "False") {
+				if( Oracle Database == "False") {
+						Employee = "karlik";
+				} else 				if( Oracle Database == "True") {
+						Employee = "bogumil";
+				}
+			}
+		} else 		if( ASP.NET Fundamentals == "True") {
+			if( Sharepoint == "False") {
+					Employee = "jacek";
+			} else 			if( Sharepoint == "True") {
+					Employee = "jarek";
+			}
+		}
+	}
+} else if( Area == "BusinessProcessStudio") {
+	if( Silverlight Fundamentals == "False") {
+		if( WCF Programming == "True") {
+				Employee = "null";
+		} else 		if( WCF Programming == "False") {
+			if( IIS Administration Fundamentals == "True") {
+					Employee = "null";
+			} else 			if( IIS Administration Fundamentals == "False") {
+				if( WPF Programming == "False") {
+					if( WF Programming == "False") {
+							Employee = "null";
+					} else 					if( WF Programming == "True") {
+						if( ASP.NET Fundamentals == "False") {
+								Employee = "marcin";
+						} else 						if( ASP.NET Fundamentals == "True") {
+								Employee = "zuber";
+						}
+					}
+				} else 				if( WPF Programming == "True") {
+					if( Localization Fundamentals == "True") {
+							Employee = "null";
+					} else 					if( Localization Fundamentals == "False") {
+						if( XML Framework Fundamentals == "False") {
+								Employee = "grzesiek";
+						} else 						if( XML Framework Fundamentals == "True") {
+								Employee = "szymon";
+						}
+					}
+				}
+			}
+		}
+	} else 	if( Silverlight Fundamentals == "True") {
+		if( WCF Programming == "True") {
+				Employee = "igor";
+		} else 		if( WCF Programming == "False") {
+				Employee = "tomasz";
+		}
+	}
+} else if( Area == "WebPortal") {
+	if( Sharepoint == "False") {
+		if( WCF Programming == "True") {
+				Employee = "null";
+		} else 		if( WCF Programming == "False") {
+			if( Localization Fundamentals == "True") {
+					Employee = "null";
+			} else 			if( Localization Fundamentals == "False") {
+				if( IIS Administration Fundamentals == "True") {
+						Employee = "null";
+				} else 				if( IIS Administration Fundamentals == "False") {
+					if( ASP.NET Fundamentals == "False") {
+						if( XML Framework Fundamentals == "False") {
+								Employee = "grzesiek";
+						} else 						if( XML Framework Fundamentals == "True") {
+								Employee = "szymon";
+						}
+					} else 					if( ASP.NET Fundamentals == "True") {
+							Employee = "irek";
+					}
+				}
+			}
+		}
+	} else 	if( Sharepoint == "True") {
+		if( WCF Programming == "True") {
+				Employee = "jarek";
+		} else 		if( WCF Programming == "False") {
+				Employee = "zuber";
+		}
+	}
+} else if( Area == "ConfigurationTools") {
+	if( WCF Programming == "True") {
+			Employee = "null";
+	} else 	if( WCF Programming == "False") {
+		if( Localization Fundamentals == "True") {
+				Employee = "null";
+		} else 		if( Localization Fundamentals == "False") {
+			if( Build Server == "False") {
+				if( Ms Sql Server == "False") {
+						Employee = "konrad";
+				} else 				if( Ms Sql Server == "True") {
+						Employee = "tomasz";
+				}
+			} else 			if( Build Server == "True") {
+				if( ASP.NET Fundamentals == "False") {
+						Employee = "jag";
+				} else 				if( ASP.NET Fundamentals == "True") {
+						Employee = "irek";
+				}
+			}
+		}
+	}
+} else if( Area == "Performance") {
+	if( WCF Programming == "True") {
+			Employee = "null";
+	} else 	if( WCF Programming == "False") {
+		if( JavaScript Programming == "False") {
+				Employee = "jag";
+		} else 		if( JavaScript Programming == "True") {
+				Employee = "irek";
+		}
+	}
+} else if( Area == "Localization") {
+	if( WCF Programming == "True") {
+			Employee = "null";
+	} else 	if( WCF Programming == "False") {
+		if( IIS Administration Fundamentals == "True") {
+				Employee = "null";
+		} else 		if( IIS Administration Fundamentals == "False") {
+			if( Ms Sql Server == "False") {
+				if( Architecture Fundamentals == "False") {
+						Employee = "null";
+				} else 				if( Architecture Fundamentals == "True") {
+					if( Performance Fundamentals == "False") {
+							Employee = "karlik";
+					} else 					if( Performance Fundamentals == "True") {
+							Employee = "jacek";
+					}
+				}
+			} else 			if( Ms Sql Server == "True") {
+					Employee = "jacek";
+			}
+		}
+	}
+} else if( Area == "Services") {
+	if( Localization Fundamentals == "True") {
+			Employee = "null";
+	} else 	if( Localization Fundamentals == "False") {
+		if( WCF Programming == "True") {
+			if( JavaScript Programming == "False") {
+					Employee = "igor";
+			} else 			if( JavaScript Programming == "True") {
+					Employee = "jarek";
+			}
+		} else 		if( WCF Programming == "False") {
+			if( Ms Sql Server == "False") {
+					Employee = "konrad";
+			} else 			if( Ms Sql Server == "True") {
+					Employee = "jacek";
+			}
+		}
+	}
+}

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0"?>
+<DataMapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Attributes>
+    <string>Area</string>
+    <string>WCF Programming</string>
+    <string>WPF Programming</string>
+    <string>WF Programming</string>
+    <string>Ms Sql Server</string>
+    <string>Oracle Database</string>
+    <string>JavaScript Programming</string>
+    <string>CSS Fundamentals</string>
+    <string>OPC Fundamentals</string>
+    <string>Silverlight Fundamentals</string>
+    <string>ASP.NET Fundamentals</string>
+    <string>Localization Fundamentals</string>
+    <string>Architecture Fundamentals</string>
+    <string>Performance Fundamentals</string>
+    <string>COM Fundamentals</string>
+    <string>Refactoring Fundamentals</string>
+    <string>Build Server</string>
+    <string>VB.net Programming</string>
+    <string>Sharepoint</string>
+    <string>IIS Administration Fundamentals</string>
+    <string>BizTalk Server Administration Fundamentals</string>
+    <string>XML Framework Fundamentals</string>
+    <string>Employee</string>
+  </Attributes>
+  <TransformingEmptyValuesMode>Remove</TransformingEmptyValuesMode>
+  <Category>Employee</Category>
+  <Delimiter>;</Delimiter>
+</DataMapping>
